@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>一键拥抱云服务</title>
+        <link rel="icon" href="./img/favicon.svg" type="image/svg+xml">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <link rel="stylesheet" href="./css/instance.css">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js?autorun=false&skin=sunburst"></script>
+        <script src="./js/instance.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <!-- spinner-header -->
+            <div class="row mt-3 fade show" id="spinner-header">
+                <div class="col-sm-12 mt-3 text-center">
+                    <div class="spinner-border text-muted"></div>
+                </div>
+            </div>
+            <!-- login-page -->
+            <div class="row mt-3 fade show d-none" id="login-page">
+                <div class="col-sm-12 mt-3 text-center">
+                    <h5>一键云</h5>
+                </div>
+                <div class="col-sm-12 mt-3 bg-light border border-1" id="login-page-nav">
+                    <h6 class="my-3">登录</h6>
+                </div>
+                <form class="needs-validation" novalidate>
+                    <div class="row small border border-1 border-top-0">
+                        <div class="col-sm-6 mt-3">
+                            <label for="keyid" class="form-label">阿里云访问键ID<span class="text-danger">*</span></label>
+                            <input type="search" class="form-control form-control-sm" id="keyid" required autocomplete="off">
+                            <div class="invalid-feedback">
+                                <a class="text-decoration-none" href="#">点击</a>获取方法
+                            </div>
+                        </div>
+                        <div class="col-sm-6 mt-3">
+                            <label for="keysecret" class="form-label">访问键密钥<span class="text-danger">*</span></label>
+                            <input type="password" class="form-control form-control-sm" id="keysecret" required autocomplete="off">
+                            <div class="invalid-feedback">
+                                <a class="text-decoration-none" href="#">点击</a>获取方法
+                            </div>
+                        </div>
+                        <div class="col-sm-12 mt-4 d-flex">
+                            <div class="col-6 d-flex justify-content-start form-switch">
+                                <input type="checkbox" class="form-check-input" role="switch" id="rememberme">
+                                <label for="rememberme" class="form-check-label px-2">记住我</label>
+                            </div>
+                            <div class="col-6 d-flex justify-content-end">
+                                <a href="#" title="使用只读权限的访问键" class="text-decoration-none mx-2" id="visitor">游客访问</a>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 mt-4 mb-4 d-grid">
+                            <button class="btn btn-primary btn-sm btn-block" type="submit" id="login-btn">登录</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- nav-header -->
+            <div class="row pt-3 bg-body fade show d-none sticky-top" id="nav-header">
+                <div class="container">
+                    <div class="row bg-primary">
+                        <div class="col-4 d-flex justify-content-start">
+                            <button class="btn text-white btn-primary" id="back-btn">
+                                <i class="bi bi-arrow-left-circle-fill"></i>
+                            </button>
+                        </div>
+                        <div class="col-4 d-flex justify-content-center">
+                            <button class="btn text-white btn-primary" id="main-btn">
+                                <i class="bi bi-cloud-lightning-fill"></i>
+                            </button>
+                        </div>
+                        <div class="col-4 d-flex justify-content-end">
+                            <button class="btn text-white btn-primary" data-bs-toggle="modal" data-bs-target="#user-info-modal" id="user-info-btn">
+                                <i class="bi bi-person-fill"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- instance-list-page -->
+            <div class="row fade show d-none" id="instance-list-page">
+                <div class="col-sm-12 bg-light border border-1" id="instance-list-page-nav">
+                    <h6 class="my-3">竞价实例</h6>
+                </div>
+                <div class="px-0 col-sm-12 small">
+                    <div class="container">
+                        <div class="row" id="instance-row">
+                            <!-- realtime content -->
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 mt-3 mb-4 d-grid">
+                    <button class="btn btn-primary btn-sm btn-block" id="spec-prequery-btn">创建实例</button>
+                </div>
+            </div>
+            <!-- instance-detail-page -->
+            <div class="row fade show d-none" id="instance-detail-page">
+                <div class="col-sm-12 bg-light border border-1" id="instance-detail-page-nav">
+                    <h6 class="my-3" id="instance-detail-id"></h6>
+                </div>
+                <div class="px-0 col-sm-12 small border border-1 border-top-0">
+                    <div class="container p-3">
+                        <div class="row mx-0">
+                            <div class="px-0 col-sm-6">
+                                <table class="table table-borderless mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <td class="col-5 p-0 text-muted">地域</td>
+                                            <td class="p-0 extra-small">
+                                                <i class="bi bi-geo-alt-fill"></i><span class="mx-1" id="instance-detail-region"></span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="px-0 col-sm-6">
+                                <table class="table table-borderless mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <td class="col-5 p-0 text-muted">可用区</td>
+                                            <td class="p-0 extra-small" id="instance-detail-zone"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="px-0 col-sm-6">
+                                <table class="table table-borderless mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <td class="col-5 p-0 text-muted">公网IP</td>
+                                            <td class="p-0 extra-small">
+                                                <span  id="instance-detail-ipaddr"></span>
+                                                <button class="btn btn-outline-secondary btn-sm border-0 p-0" id="instance-detail-copyip"
+                                                    data-bs-toggle="tooltip" data-bs-title="点击复制">
+                                                    <i class="bi bi-copy mx-1"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="px-0 col-sm-6">
+                                <table class="table table-borderless mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <td class="col-5 p-0 text-muted">实例规格</td>
+                                            <td class="p-0 extra-small" id="instance-detail-type"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="px-0 col-sm-6">
+                                <table class="table table-borderless mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <td class="col-5 p-0 text-muted">
+                                                CPU<span class="extra-small">&</span>内存<span class="extra-small">&</span>带宽
+                                            </td>
+                                            <td class="p-0 extra-small" id="instance-detail-spec"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="px-0 col-sm-6">
+                                <table class="table table-borderless mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <td class="col-5 p-0 text-muted">操作系统</td>
+                                            <td class="p-0 extra-small" id="instance-detail-osname"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="px-0 col-sm-6">
+                                <table class="table table-borderless mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <td class="col-5 p-0 text-muted">系统盘</td>
+                                            <td class="p-0 extra-small" id="instance-detail-sysdisk"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="px-0 col-sm-6">
+                                <table class="table table-borderless mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <td class="col-5 p-0 text-muted">目录价</td>
+                                            <td class="p-0 extra-small" id="instance-detail-price"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="px-0 col-sm-6">
+                                <table class="table table-borderless mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <td class="col-5 p-0 text-muted">创建时间</td>
+                                            <td class="p-0 extra-small" id="instance-detail-cretime"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="px-0 col-sm-6">
+                                <table class="table table-borderless mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <td class="col-5 p-0 text-muted">预定释放时间</td>
+                                            <td class="p-0 extra-small"><i class="bi bi-alarm-fill" id="instance-detail-reltime"></i></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="px-0 col-sm-6">
+                                <table class="table table-borderless mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <td class="col-5 p-0 text-muted">启动日志
+                                                <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-title="启动约需1分钟"></i>
+                                            </td>
+                                            <td class="p-0 extra-small">
+                                                <a title="查看初始化和启动LOG" class="text-decoration-none" id="instance-detail-log"></a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="px-0 col-sm-12">
+                                <div class="text-muted">初始化脚本</div>
+                                <div id="instance-detail-userdata"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 mt-3 mb-4 d-grid">
+                    <button class="btn btn-primary btn-sm btn-block" data-bs-toggle="modal"
+                        data-bs-target="#delete-instance-confirm-modal" id="instance-release-btn">释放实例
+                    </button>
+                </div>
+            </div>
+            <!-- spec-query-page -->
+            <div class="row fade show d-none" id="spec-query-page">
+                <div class="col-sm-12 bg-light border border-1" id="spec-query-page-nav">
+                    <h6 class="my-3">规格查询</h6>
+                </div>
+                <div class="px-0 col-sm-12 small border border-1 border-top-0">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-6 mt-3 d-flex">
+                                <div class="col-3 py-1">地域</div>
+                                <div class="d-flex">
+                                    <button class="btn btn-primary btn-sm min-w60" id="region-op" value="out">Out</button>
+                                    <button class="btn btn-outline-primary btn-sm border-0" data-bs-toggle="modal" data-bs-target="#region-option-modal" id="more-region"><i class="bi bi-three-dots-vertical"></i></button>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 mt-3 d-flex">
+                                <div class="col-3 py-1">CPU
+                                    <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-title="更大可指定4, 8, 12, 14, 16, 20, 24, etc"></i>
+                                </div>
+                                <div class="col-5 btn-group" role="group">
+                                    <input type="radio" class="btn-check" name="cpu-op" id="cpu-op-default" value="1,2" autocomplete="off" checked>
+                                    <label class="btn btn-sm btn-outline-primary extra-small" for="cpu-op-default">默认<i class="bi bi-info-circle-fill"
+                                        data-bs-toggle="tooltip" data-bs-title="默认1~2vCPU"></i>
+                                    </label>
+                                    <input type="radio" class="btn-check" name="cpu-op" id="cpu-op-1" value="1" autocomplete="off">
+                                    <label class="btn btn-sm btn-outline-primary" for="cpu-op-1">1</label>
+                                    <input type="radio" class="btn-check" name="cpu-op" id="cpu-op-2" value="2" autocomplete="off">
+                                    <label class="btn btn-sm btn-outline-primary" for="cpu-op-2">2</label>
+                                </div>
+                                <div class="col-4 d-flex">
+                                    <input type="number" class="mx-1 form-control form-control-sm border-primary max-w60" id="cpu-op-other" autocomplete="off">
+                                    <div class="extra-small text-muted py-2">vCPU</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 mt-3 d-flex">
+                                <div class="col-3 py-1">内存
+                                    <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-title="更大可指定4, 8, 12, 16, 24, 32, 48, etc"></i>
+                                </div>
+                                <div class="col-5 btn-group" role="group">
+                                    <input type="radio" class="btn-check" name="mem-op" id="mem-op-default" value="1,2" autocomplete="off" checked>
+                                    <label class="btn btn-sm btn-outline-primary extra-small" for="mem-op-default">默认<i class="bi bi-info-circle-fill"
+                                        data-bs-toggle="tooltip" data-bs-title="默认1~2GiB"></i>
+                                    </label>
+                                    <input type="radio" class="btn-check" name="mem-op" id="mem-op-1" value="1" autocomplete="off">
+                                    <label class="btn btn-sm btn-outline-primary" for="mem-op-1">1</label>
+                                    <input type="radio" class="btn-check" name="mem-op" id="mem-op-2" value="2" autocomplete="off">
+                                    <label class="btn btn-sm btn-outline-primary" for="mem-op-2">2</label>
+                                </div>
+                                <div class="col-4 d-flex">
+                                    <input type="number" class="mx-1 form-control form-control-sm border-primary max-w60" id="mem-op-other" autocomplete="off">
+                                    <div class="extra-small text-muted py-2">GiB</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 mt-3 d-flex">
+                                <div class="col-3 py-1">带宽</div>
+                                <div class="col-5 btn-group" role="group">
+                                    <input type="radio" class="btn-check" name="bandwidth-op" id="bandwidth-op-1" value="1" autocomplete="off">
+                                    <label class="btn btn-sm btn-outline-primary" for="bandwidth-op-1">1</label>
+                                    <input type="radio" class="btn-check" name="bandwidth-op" id="bandwidth-op-default" value="2" autocomplete="off" checked>
+                                    <label class="btn btn-sm btn-outline-primary" for="bandwidth-op-default">2</label>
+                                    <input type="radio" class="btn-check" name="bandwidth-op" id="bandwidth-op-3" value="3" autocomplete="off">
+                                    <label class="btn btn-sm btn-outline-primary" for="bandwidth-op-3">3</label>
+                                </div>
+                                <div class="col-4 d-flex">
+                                    <input type="number" class="mx-1 form-control form-control-sm border-primary max-w60" id="bandwidth-op-other" autocomplete="off">
+                                    <div class="extra-small text-muted py-2">Mbps</div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-12 mt-4 mb-4 pt-3 d-flex">
+                                <div class="col-6 d-grid">
+                                    <button class="btn btn-outline-primary btn-sm btn-block mx-2" id="spec-reset-btn">重置</button>
+                                </div>
+                                <div class="col-6 d-grid">
+                                    <button class="btn btn-primary btn-sm btn-block mx-2" id="spec-query-btn">查询</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- spec-result-page -->
+            <div class="row fade show d-none" id="spec-result-page">
+                <div class="col-sm-12 bg-light border border-1" id="spec-result-page-nav">
+                    <h6 class="my-3">规格列表</h6>
+                </div>
+                <div class="px-0 col-sm-12 small">
+                    <div class="container">
+                        <div class="row" id="spec-row">
+                            <!-- realtime content -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- create-instance-page -->
+            <div class="row fade show d-none" id="create-instance-page">
+                <div class="col-sm-12 bg-light border border-1" id="create-instance-page-nav">
+                    <h6 class="my-3">实例创建</h6>
+                </div>
+                <div class="px-0 col-sm-12 small border border-1 border-top-0">
+                    <div class="container p-3">
+                        <div class="row mx-0">
+                            <div class="px-0 col-sm-6">
+                                <table class="table table-borderless mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <td class="col-5 p-0 text-muted">实例规格<small class="fst-italic mx-1" 
+                                                id="create-instance-spec-index"></small>
+                                            </td>
+                                            <td class="p-0 extra-small" id="create-instance-type"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="px-0 col-sm-6">
+                                <table class="table table-borderless mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <td class="col-5 p-0 text-muted">地域</td>
+                                            <td class="p-0 extra-small">
+                                                <i class="bi bi-geo-alt-fill"></i><span class="mx-1" id="create-instance-region"></span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="px-0 col-sm-6">
+                                <table class="table table-borderless mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <td class="col-5 p-0 text-muted">可用区</td>
+                                            <td class="p-0 extra-small" id="create-instance-zone"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="px-0 col-sm-6">
+                                <table class="table table-borderless mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <td class="col-5 p-0 text-muted">
+                                                CPU<span class="extra-small">&</span>内存<span class="extra-small">&</span>带宽
+                                            </td>
+                                            <td class="p-0 extra-small" id="create-instance-spec"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="px-0 col-sm-6">
+                                <table class="table table-borderless mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <td class="col-5 p-0 text-muted">系统盘</td>
+                                            <td class="p-0 extra-small" id="create-instance-sysdisk"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="px-0 col-sm-6">
+                                <table class="table table-borderless mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <td class="col-5 p-0 text-muted">目录价</td>
+                                            <td class="p-0 extra-small" id="create-instance-price"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="px-0 col-sm-12 small border border-1 border-top-0">
+                    <div class="container p-3">
+                        <div class="row mx-0">
+                            <div class="col-sm-6 mt-3 px-0 d-flex">
+                                <div class="col-3 text-muted">使用时间</div>
+                                <div class="col-6"><input type="range" class="form-range" min="1" max="4" step="0.5" id="alivehour-op" value="1"></div>
+                                <div class="col-3"><span class="mx-2 extra-small" id="alivehour-op-txt">1&nbsp;小时</span></div>
+                            </div>
+                            <div class="col-sm-6 mt-3 px-0 d-flex">
+                                <div class="col-3 text-muted">用户脚本</div>
+                                <div class="col-9" id="userdata-op-area">
+                                    <!-- realtime content -->
+                                </div>
+                            </div>
+                            <div class="col-sm-12 mt-4 mb-4 pt-3 px-0 d-flex">
+                                <div class="col-6 d-grid">
+                                    <button class="btn btn-outline-primary btn-sm btn-block mx-2" id="cre-reset-btn">重置</button>
+                                </div>
+                                <div class="col-6 d-grid">
+                                    <button class="btn btn-primary btn-sm btn-block mx-2" data-bs-toggle="modal"
+                                        data-bs-target="#create-instance-confirm-modal" id="cre-excute-btn">创建
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- footer -->
+            <div class="row fade show" id="footer">
+                <div class="col-sm-12 my-3 small text-center">
+                    <p class="text-muted">2024&copy;renrengpt</p>
+                    <ul class="list-inline">
+                        <li class="list-inline-item"><a class="text-decoration-none" target="_blank" href="./privacy.html">隐私政策</a></li>
+                        <li class="list-inline-item"><a class="text-decoration-none" target="_blank" href="./terms.html">条款</a></li>
+                        <li class="list-inline-item"><a class="text-decoration-none" target="_blank" href="./support.html">技术支持</a></li>
+                    </ul>
+                </div>
+            </div>
+            <!-- user-info-modal -->
+            <div class="modal fade small" id="user-info-modal" data-bs-backdrop="static">
+                <div class="modal-dialog modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header pb-2 border-0">
+                            <strong class="extra-small">用户信息</strong>
+                            <button class="btn btn-close extra-small" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body p-2" id="user-info-modal-body">
+                            <div class="card shadow col-sm-12">
+                                <div class="card-body">
+                                    <div class="d-flex">
+                                        <div class="col-3 text-muted">访问键ID</div>
+                                        <div class="extra-small" id="user-key-id"></div>
+                                    </div>
+                                    <div class="d-flex mt-3 form-switch">
+                                        <input type="checkbox" class="form-check-input" role="switch" id="user-clearme">
+                                        <label for="user-clearme" class="form-check-label px-2">清空本地存储<small class="text-muted">（包括脚本）</small></label>
+                                    </div>
+                                    <div class="mt-4 mb-1 d-flex justify-content-center">
+                                        <button class="btn btn-outline-primary btn-sm border-0" id="user-quit-btn"
+                                            data-bs-dismiss="modal"><i class="bi bi-power mr-1"></i>退出登录
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-3 mb-2">
+                                <button class="btn btn-outline-primary btn-sm border-0" data-bs-toggle="modal" data-bs-target="#add-userdata-modal" id="userdata-modal-open">
+                                    <i class="bi bi-plus-circle-fill mx-1"></i><span class="mx-1">追加脚本</span>
+                                </button>
+                            </div>
+                            <!-- realtime content -->
+                        </div>
+                        <div class="modal-footer border-0 py-2">
+                            <button class="btn btn-outline-primary extra-small px-3" data-bs-dismiss="modal">关闭</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- region-option-modal -->
+            <div class="modal fade small" id="region-option-modal">
+                <div class="modal-dialog modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header pb-2 border-0">
+                            <strong class="extra-small">选择地域</strong>
+                            <button class="btn btn-close extra-small" data-bs-dismiss="modal" id="region-option-modal-close"></button>
+                        </div>
+                        <div class="modal-body p-2">
+                            <nav>
+                                <div class="nav nav-tabs nav-fill" role="tablist">
+                                    <button class="nav-link py-1 active" data-bs-toggle="tab" data-bs-target="#nav-out" type="button" role="tab" id="tab-out">Out</button>
+                                    <button class="nav-link py-1" data-bs-toggle="tab" data-bs-target="#nav-in" type="button" role="tab" id="tab-in">In</button>
+                                </div>
+                            </nav>
+                            <div class="tab-content border border-1 border-top-0">
+                                <div class="tab-pane fade show active" id="nav-out" role="tabpanel">
+                                    <div class="container p-3">
+                                        <div class="row">
+                                            <div class="d-grid">
+                                                <input type="radio" class="btn-check" name="region" id="out" value="out" autocomplete="off" checked>
+                                                <label class="btn btn-sm btn-outline-primary d-block" for="out">Out</label>
+                                            </div>
+                                            <div class="mt-3 d-flex">
+                                                <div class="col-6 d-grid">
+                                                    <input type="radio" class="btn-check" name="region" id="us" value="us" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary d-block" for="us">美国</label>
+                                                </div>
+                                                <div class="col-3 d-flex justify-content-center">
+                                                    <input type="radio" class="btn-check" name="region" id="us-west-1" value="us-west-1" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary min-w60" for="us-west-1">硅谷</label>
+                                                </div>
+                                                <div class="col-3 d-flex justify-content-center">
+                                                    <input type="radio" class="btn-check" name="region" id="us-east-1" value="us-east-1" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary text-truncate min-w60" for="us-east-1">弗吉尼亚</label>
+                                                </div>
+                                            </div>
+                                            <div class="mt-3 d-flex">
+                                                <div class="col-6 d-grid">
+                                                    <input type="radio" class="btn-check" name="region" id="neasia" value="neasia" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary d-block" for="neasia">东北亚</label>
+                                                </div>
+                                                <div class="col-3 d-flex justify-content-center">
+                                                    <input type="radio" class="btn-check" name="region" id="ap-northeast-1" value="ap-northeast-1" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary min-w60" for="ap-northeast-1">日本</label>
+                                                </div>
+                                                <div class="col-3 d-flex justify-content-center">
+                                                    <input type="radio" class="btn-check" name="region" id="ap-northeast-2" value="ap-northeast-2" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary min-w60" for="ap-northeast-2">韩国</label>
+                                                </div>
+                                            </div>
+                                            <div class="mt-3 d-flex">
+                                                <div class="col-6 d-grid">
+                                                    <input type="radio" class="btn-check" name="region" id="eu" value="eu" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary d-block" for="eu">欧洲</label>
+                                                </div>
+                                                <div class="col-3 d-flex justify-content-center">
+                                                    <input type="radio" class="btn-check" name="region" id="eu-west-1" value="eu-west-1" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary min-w60" for="eu-west-1">英国</label>
+                                                </div>
+                                                <div class="col-3 d-flex justify-content-center">
+                                                    <input type="radio" class="btn-check" name="region" id="eu-centra-1" value="eu-centra-1" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary min-w60" for="eu-centra-1">德国</label>
+                                                </div>
+                                            </div>
+                                            <div class="mt-3 d-flex">
+                                                <div class="col-6 d-grid">
+                                                    <input type="radio" class="btn-check" name="region" id="seasia" value="seasia" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary d-block" for="seasia">东南亚</label>
+                                                </div>
+                                                <div class="col-3 d-flex justify-content-center">
+                                                    <input type="radio" class="btn-check" name="region" id="ap-southeast-1" value="ap-southeast-1" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary min-w60" for="ap-southeast-1">新加坡</label>
+                                                </div>
+                                                <div class="col-3 d-flex justify-content-center">
+                                                    <input type="radio" class="btn-check" name="region" id="ap-southeast-3" value="ap-southeast-3" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary text-truncate min-w60" for="ap-southeast-3">马来西亚</label>
+                                                </div>
+                                            </div>
+                                            <div class="mt-3 d-flex">
+                                                <div class="col-3 offset-3 d-flex justify-content-center">
+                                                    <input type="radio" class="btn-check" name="region" id="ap-southeast-5" value="ap-southeast-5" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary min-w60" for="ap-southeast-5">印尼</label>
+                                                </div>
+                                                <div class="col-3 d-flex justify-content-center">
+                                                    <input type="radio" class="btn-check" name="region" id="ap-southeast-6" value="ap-southeast-6" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary min-w60" for="ap-southeast-6">菲律宾</label>
+                                                </div>
+                                                <div class="col-3 d-flex justify-content-center">
+                                                    <input type="radio" class="btn-check" name="region" id="ap-southeast-7" value="ap-southeast-7" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary min-w60" for="ap-southeast-7">泰国</label>
+                                                </div>
+                                            </div>
+                                            <div class="mt-3 d-flex">
+                                                <div class="col-3 d-flex justify-content-center">
+                                                    <input type="radio" class="btn-check" name="region" id="cn-hongkong" value="cn-hongkong" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary min-w60" for="cn-hongkong">香港</label>
+                                                </div>
+                                                <div class="col-3 d-flex justify-content-center">
+                                                    <input type="radio" class="btn-check" name="region" id="me-east-1" value="me-east-1" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary min-w60" for="me-east-1">阿联酋</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="nav-in" role="tabpanel">
+                                    <div class="container p-3">
+                                        <div class="row">
+                                            <div class="d-grid">
+                                                <input type="radio" class="btn-check" name="region" id="in" value="in" autocomplete="off">
+                                                <label class="btn btn-sm btn-outline-primary d-block" for="in">中国大陆</label>
+                                            </div>
+                                            <div class="mt-3 d-flex">
+                                                <div class="col-3 d-flex justify-content-center">
+                                                    <input type="radio" class="btn-check" name="region" id="cn-qingdao" value="cn-qingdao" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary min-w60" for="cn-qingdao">青岛</label>
+                                                </div>
+                                                <div class="col-3 d-flex justify-content-center">
+                                                    <input type="radio" class="btn-check" name="region" id="cn-beijing" value="cn-beijing" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary min-w60" for="cn-beijing">北京</label>
+                                                </div>
+                                                <div class="col-3 d-flex justify-content-center">
+                                                    <input type="radio" class="btn-check" name="region" id="cn-zhangjiakou" value="cn-zhangjiakou" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary min-w60" for="cn-zhangjiakou">张家口</label>
+                                                </div>
+                                                <div class="col-3 d-flex justify-content-center">
+                                                    <input type="radio" class="btn-check" name="region" id="cn-huhehaote" value="cn-huhehaote" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary text-truncate min-w60" for="cn-huhehaote">呼和浩特</label>
+                                                </div>
+                                            </div>
+                                            <div class="mt-3 d-flex">
+                                                <div class="col-3 d-flex justify-content-center">
+                                                    <input type="radio" class="btn-check" name="region" id="cn-wulanchabu" value="cn-wulanchabu" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary text-truncate min-w60" for="cn-wulanchabu">乌兰察布</label>
+                                                </div>
+                                            </div>
+                                            <div class="mt-3 d-flex">
+                                                <div class="col-3 d-flex justify-content-center">
+                                                    <input type="radio" class="btn-check" name="region" id="cn-hangzhou" value="cn-hangzhou" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary min-w60" for="cn-hangzhou">杭州</label>
+                                                </div>
+                                                <div class="col-3 d-flex justify-content-center">
+                                                    <input type="radio" class="btn-check" name="region" id="cn-shanghai" value="cn-shanghai" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary min-w60" for="cn-shanghai">上海</label>
+                                                </div>
+                                                <div class="col-3 d-flex justify-content-center">
+                                                    <input type="radio" class="btn-check" name="region" id="cn-nanjing" value="cn-nanjing" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary min-w60" for="cn-nanjing">南京</label>
+                                                </div>
+                                                <div class="col-3 d-flex justify-content-center">
+                                                    <input type="radio" class="btn-check" name="region" id="cn-fuzhou" value="cn-fuzhou" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary min-w60" for="cn-fuzhou">福州</label>
+                                                </div>
+                                            </div>
+                                            <div class="mt-3 d-flex">
+                                                <div class="col-3 d-flex justify-content-center">
+                                                    <input type="radio" class="btn-check" name="region" id="cn-shenzhen" value="cn-shenzhen" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary min-w60" for="cn-shenzhen">深圳</label>
+                                                </div>
+                                                <div class="col-3 d-flex justify-content-center">
+                                                    <input type="radio" class="btn-check" name="region" id="cn-heyuan" value="cn-heyuan" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary min-w60" for="cn-heyuan">河源</label>
+                                                </div>
+                                                <div class="col-3 d-flex justify-content-center">
+                                                    <input type="radio" class="btn-check" name="region" id="cn-guangzhou" value="cn-guangzhou" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary min-w60" for="cn-guangzhou">广州</label>
+                                                </div>
+                                            </div>
+                                            <div class="mt-3 d-flex">
+                                                <div class="col-3 d-flex justify-content-center">
+                                                    <input type="radio" class="btn-check" name="region" id="cn-wuhan-lr" value="cn-wuhan-lr" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary min-w60" for="cn-wuhan-lr">武汉</label>
+                                                </div>
+                                                <div class="col-3 d-flex justify-content-center">
+                                                    <input type="radio" class="btn-check" name="region" id="cn-chengdu" value="cn-chengdu" autocomplete="off">
+                                                    <label class="btn btn-sm btn-outline-primary min-w60" for="cn-chengdu">成都</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- add-userdata-modal -->
+            <div class="modal fade small" id="add-userdata-modal" data-bs-backdrop="static">
+                <div class="modal-dialog modal-fullscreen" id="add-userdata-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header pt-4 pb-2 border-0">
+                            <input type="text" class="form-control form-control-sm p-2" placeholder="用于识别的脚本名，长度以若干为宜"
+                                id="user-data-input-name" required autocomplete="off">
+                        </div>
+                        <div class="modal-body p-2">
+                            <textarea class="form-control form-control-sm border border-1 w-100 h-100 py-2 text-nowrap noresize"
+                                placeholder="#!/bin/bash" id="user-data-input-content" required autocomplete="off"></textarea>
+                        </div>
+                        <div class="modal-footer border-0">
+                            <button class="btn btn-primary extra-small mx-3 px-3" id="userdata-modal-save">保存</button>
+                            <button class="btn btn-outline-primary extra-small px-3" data-bs-dismiss="modal" id="userdata-modal-close">关闭</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- create-instance-confirm-modal -->
+            <div class="modal fade small" id="create-instance-confirm-modal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header pb-2"><strong class="extra-small">确定创建实例吗？</strong></div>
+                        <div class="modal-body">阿里云按使用时间收费。请在使用结束后提前释放实例，否则实例将到期自动释放。</div>
+                        <div class="modal-footer border-0">
+                            <button class="btn btn-primary extra-small mx-3 px-3" data-bs-dismiss="modal">取消</button>
+                            <button class="btn btn-outline-primary extra-small px-3" 
+                                data-bs-dismiss="modal" id="instance-create-confirm">确定
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- delete-instance-confirm-modal -->
+            <div class="modal fade small" id="delete-instance-confirm-modal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header pb-2"><strong class="extra-small">确定释放实例吗？</strong></div>
+                        <div class="modal-body">释放实例将导致实例上运行的服务不可用，请及时退出使用。</div>
+                        <div class="modal-footer border-0">
+                            <button class="btn btn-primary extra-small mx-3 px-3" data-bs-dismiss="modal">取消</button>
+                            <button class="btn btn-outline-primary extra-small px-3" 
+                                data-bs-dismiss="modal" id="instance-release-confirm">确定
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </body>
+</html>

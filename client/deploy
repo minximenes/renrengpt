@@ -1,0 +1,56 @@
+#!/bin/bash
+
+echo "update and install"
+sudo apt-get update >/dev/null 2>&1
+sudo apt-get install -y nginx >/dev/null
+
+echo "create project dir"
+homeDir=/var/www/one_click_client
+sudo rm -rf $homeDir && sudo mkdir -p $homeDir
+cd $homeDir
+
+echo "download sources"
+wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/client/instance.html
+wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/client/privacy.html
+wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/client/support.html
+wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/client/terms.html
+wget -q -P ./js https://raw.githubusercontent.com/minximenes/renrengpt/main/client/js/instance.js
+# api url
+server_ip=$(curl -s ifconfig.me)
+sed -i "s/127.0.0.1/$server_ip/" ./js/instance.js
+wget -q -P ./js https://raw.githubusercontent.com/minximenes/renrengpt/main/client/js/footer.js
+wget -q -P ./css https://raw.githubusercontent.com/minximenes/renrengpt/main/client/css/instance.css
+wget -q -P ./img https://raw.githubusercontent.com/minximenes/renrengpt/main/client/img/favicon.svg
+
+echo "configurate nginx"
+# nginx.conf
+sudo sed -i 's/user www-data/user root/' /etc/nginx/nginx.conf
+# sites-available
+cat <<EOF > tmp
+server {
+    listen 80;
+    server_name beautgpt.com
+                sovitsgpt.com
+                renrengpt.com
+                8.137.83.192;
+    root /var/www/one_click_client;
+    location / {
+        index instance.html;
+        try_files $uri $uri /instance.html;
+    }
+    location /privacy/ {
+        index privacy.html;
+    }
+    location /support/ {
+        index support.html;
+    }
+    location /terms/ {
+        index terms.html;
+    }
+}
+EOF
+sudo mv tmp /etc/nginx/sites-available/one_click_client.conf
+sudo ln -s /etc/nginx/sites-available/one_click_client.conf /etc/nginx/sites-enabled/one_click_client.conf
+
+sudo service nginx restart
+sudo service nginx status

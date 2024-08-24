@@ -28,7 +28,7 @@ def index():
     return "connect success"
 
 
-@app.route("/<logType>")
+@app.route("/log/<logType>")
 def log(logType):
     '''
     view log
