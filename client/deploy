@@ -11,6 +11,10 @@ cd $homeDir
 
 echo "download sources"
 wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/client/instance.html
+# page link
+sed -i 's/.\/privacy.html/\/privacy/' ./instance.html
+sed -i 's/.\/support.html/\/support/' ./instance.html
+sed -i 's/.\/terms.html/\/terms/' ./instance.html
 wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/client/privacy.html
 wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/client/support.html
 wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/client/terms.html
@@ -19,6 +23,8 @@ wget -q -P ./js https://raw.githubusercontent.com/minximenes/renrengpt/main/clie
 server_ip=$(curl -s ifconfig.me)
 sed -i "s/127.0.0.1/$server_ip/" ./js/instance.js
 wget -q -P ./js https://raw.githubusercontent.com/minximenes/renrengpt/main/client/js/footer.js
+# page link
+sed -i 's/.\/instance.html/\//' ./js/footer.js
 wget -q -P ./css https://raw.githubusercontent.com/minximenes/renrengpt/main/client/css/instance.css
 wget -q -P ./img https://raw.githubusercontent.com/minximenes/renrengpt/main/client/img/favicon.svg
 
