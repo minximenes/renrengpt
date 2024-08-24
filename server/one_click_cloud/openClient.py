@@ -12,7 +12,7 @@ from alibabacloud_vpc20160428.client import Client as VpcClient
 from alibabacloud_vpc20160428 import models as vpc_models
 from alibabacloud_tea_util import models as util_models
 # inner import
-from auth import generatePwd
+from one_click_cloud.auth import generatePwd
 
 class OpenClient:
     def __init__(self):

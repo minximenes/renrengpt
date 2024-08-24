@@ -1,7 +1,7 @@
 from flask import request
 from functools import wraps
 # inner import
-from auth import varifyToken
+from one_click_cloud.auth import varifyToken
 
 
 def varifyRequestTokenWrapper(func):
