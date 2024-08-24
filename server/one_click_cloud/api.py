@@ -8,7 +8,7 @@ from one_click_cloud.openClient import OpenClient
 from one_click_cloud.auth import deEnSecret, generateToken, splitSecret
 
 
-ORIGIN_RESOURCE = "http://127.0.0.1:5500 http://8.137.83.192 http://beautigpt"
+ORIGIN_RESOURCE = ["http://127.0.0.1:5500", "http://8.137.83.192", "http://beautigpt"]
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": ORIGIN_RESOURCE}})

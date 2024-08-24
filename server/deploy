@@ -1,13 +1,10 @@
 #!/bin/bash
 
-# wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/server/deploy
-# sudo bash deploy
-
 echo "update and install"
 sudo apt-get update >/dev/null 2>&1
 sudo apt-get install -y python3 python3-pip >/dev/null
 
-echo "create proj dir"
+echo "create project dir"
 homeDir=/home/one_click_cloud_dir
 sudo rm -rf $homeDir && sudo mkdir -p $homeDir
 cd $homeDir

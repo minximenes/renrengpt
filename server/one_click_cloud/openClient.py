@@ -37,6 +37,10 @@ class OpenClient:
         return config
 
     @staticmethod
+    def Runtime(timeout: int = 20) -> util_models.RuntimeOptions:
+        return util_models.RuntimeOptions(connect_timeout=timeout)
+
+    @staticmethod
     def describeRegions(
         key_id: str, key_secret: str
     ) -> Dict:
@@ -71,7 +75,7 @@ class OpenClient:
             for region_id in region_ids:
                 config = OpenClient.Config(key_id, key_secret, f"ecs.{region_id}")
                 client = EcsClient(config)
-                runtime = util_models.RuntimeOptions()
+                runtime = OpenClient.Runtime()
 
                 request = ecs_models.DescribeInstancesRequest(
                     region_id=region_id, instance_charge_type="PostPaid"
