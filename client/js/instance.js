@@ -327,7 +327,7 @@
                                 <tr>
                                     <td class="col-5 p-0 text-muted">实例ID</td>
                                     <td class="p-0 extra-small">
-                                        <a href="#" class="text-decoration-none" id="instanceid-${v.instance_id}"
+                                        <a class="text-decoration-none pointer" id="instanceid-${v.instance_id}"
                                             data-region="${v.region_id}" data-osname="${v.osname}"
                                             data-reltime="${v.release_time}">${v.instance_id}</a>
                                     </td>
@@ -718,7 +718,7 @@
                                 <tr>
                                     <td class="col-5 p-0 text-muted">实例规格<small class="fst-italic mx-1">${i + 1}</small></td>
                                     <td class="p-0 extra-small">
-                                        <a href="#" class="text-decoration-none" id="spec-type-${i}"
+                                        <a class="text-decoration-none pointer" id="spec-type-${i}"
                                             data-jsn=${JSON.stringify(v)}>${getTypeLabel(v.instance_type)}</a>
                                     </td>
                                 </tr>
