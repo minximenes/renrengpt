@@ -21,6 +21,11 @@ def handleError(e):
     return jsonify(error=str(e) if str(e) else unexpected), 500
 
 
+@app.route("/")
+def index():
+    return "connect success"
+
+
 @app.route("/auth", methods=["POST"])
 def auth():
     '''

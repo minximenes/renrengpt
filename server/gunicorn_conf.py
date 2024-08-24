@@ -7,5 +7,5 @@ backlog = 2048
 worker_class = "gevent"
 worker_connections = 1000
 accesslog = "/var/log/gunicorn/access.log"
-loglevel = "warning"
+loglevel = "error"
 errorlog = "/var/log/gunicorn/error.log"
