@@ -43,7 +43,9 @@ class OpenClient:
         @param: milliseconds(20s)
         @return: RuntimeOptions
         '''
-        return util_models.RuntimeOptions(connect_timeout=timeout)
+        return util_models.RuntimeOptions(
+            read_timeout=timeout, connect_timeout=timeout
+        )
 
     @staticmethod
     def describeRegions(

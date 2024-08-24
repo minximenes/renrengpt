@@ -1,8 +1,8 @@
 (function () {
     'use strict'
 
-    // const SERVICE_RESOURCE = 'http://127.0.0.1:5000';
-    const SERVICE_RESOURCE = 'http://8.137.83.192:5000';
+    // const SERVICE_RESOURCE = 'http://8.137.83.192:5000';
+    const SERVICE_RESOURCE = 'http://127.0.0.1:5000';
 
     function $(id) {
         return document.getElementById(id);
