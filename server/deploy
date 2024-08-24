@@ -1,29 +1,30 @@
 #!/bin/bash
 
-# wget https://raw.githubusercontent.com/minximenes/renrengpt/main/server/deploy
+# wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/server/deploy
 # sudo bash deploy
 
+echo "update and install"
 sudo apt-get update >/dev/null 2>&1
 sudo apt-get install -y python3 python3-pip >/dev/null
 
-# proj dir
+echo "create proj dir"
 homeDir=/home/one_click_cloud_dir
 sudo rm -rf $homeDir && sudo mkdir -p $homeDir
 cd $homeDir
 
-# sources
-wget https://raw.githubusercontent.com/minximenes/renrengpt/main/server/requirements.txt
-wget https://raw.githubusercontent.com/minximenes/renrengpt/main/server/gunicorn_conf.py
+echo "download sources"
+wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/server/requirements.txt
+wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/server/gunicorn_conf.py
 wget -q -P ./one_click_cloud https://raw.githubusercontent.com/minximenes/renrengpt/main/server/one_click_cloud/__init__.py
 wget -q -P ./one_click_cloud https://raw.githubusercontent.com/minximenes/renrengpt/main/server/one_click_cloud/api.py
 wget -q -P ./one_click_cloud https://raw.githubusercontent.com/minximenes/renrengpt/main/server/one_click_cloud/auth.py
 wget -q -P ./one_click_cloud https://raw.githubusercontent.com/minximenes/renrengpt/main/server/one_click_cloud/openClient.py
 wget -q -P ./one_click_cloud https://raw.githubusercontent.com/minximenes/renrengpt/main/server/one_click_cloud/wrapper.py
 
-# dependencies
+echo "install dependencies"
 sudo pip3 install -q -r requirements.txt
 
-# gunicorn
+echo "configurate gunicorn"
 # log
 gunicornLogDir=/var/log/gunicorn
 sudo rm -rf $gunicornLogDir && sudo mkdir -p $gunicornLogDir
@@ -50,11 +51,12 @@ sudo mv tmp /etc/systemd/system/one_click_cloud.service
 sudo systemctl daemon-reload
 sudo systemctl enable one_click_cloud.service
 sudo systemctl restart one_click_cloud.service
+sudo systemctl status one_click_cloud.service
 
-# logrotate
+echo "configurate logrotate"
 # separate logfile
 cat <<EOF > tmp
-/var/log/gunicorn/*.log {
+$gunicornLogDir/*.log {
     daily
     dateext
     dateformat -%Y-%m-%d
@@ -66,3 +68,5 @@ cat <<EOF > tmp
 EOF
 sudo mv tmp /etc/logrotate.d/gunicorn
 sudo logrotate /etc/logrotate.d/gunicorn
+
+echo "end"
