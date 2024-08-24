@@ -1,7 +1,7 @@
 import logging
 import os
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response
 from flask_cors import CORS
 # inner import
 from one_click_cloud.wrapper import varifyRequestTokenWrapper
