@@ -37,7 +37,12 @@ class OpenClient:
         return config
 
     @staticmethod
-    def Runtime(timeout: int = 20) -> util_models.RuntimeOptions:
+    def Runtime(timeout: int = 20 * 1000) -> util_models.RuntimeOptions:
+        '''
+        create runtimeOptions
+        @param: milliseconds(20s)
+        @return: RuntimeOptions
+        '''
         return util_models.RuntimeOptions(connect_timeout=timeout)
 
     @staticmethod
@@ -51,7 +56,7 @@ class OpenClient:
         """
         config = OpenClient.Config(key_id, key_secret)
         client = EcsClient(config)
-        runtime = util_models.RuntimeOptions()
+        runtime = OpenClient.Runtime()
 
         request = ecs_models.DescribeRegionsRequest(
             resource_type="instance", instance_charge_type="SpotAsPriceGo"
@@ -123,7 +128,7 @@ class OpenClient:
         """
         config = OpenClient.Config(key_id, key_secret, f"ecs.{region_id}")
         client = EcsClient(config)
-        runtime = util_models.RuntimeOptions()
+        runtime = OpenClient.Runtime()
 
         # instance attribute
         describe_instance_attribute_request = ecs_models.DescribeInstanceAttributeRequest(
@@ -194,7 +199,7 @@ class OpenClient:
         """
         config = OpenClient.Config(key_id, key_secret, f"ecs.{region_id}")
         client = EcsClient(config)
-        runtime = util_models.RuntimeOptions()
+        runtime = OpenClient.Runtime()
 
         category_prices = []
         for disk_category in disk_categorys:
@@ -240,7 +245,7 @@ class OpenClient:
         """
         ecs_client = EcsClient(OpenClient.Config(key_id, key_secret, f"ecs.{region_id}"))
         vpc_client = VpcClient(OpenClient.Config(key_id, key_secret, f"vpc.{region_id}"))
-        runtime = util_models.RuntimeOptions()
+        runtime = OpenClient.Runtime()
         # retrieve instance info
         describe_instance_attribute_request = ecs_models.DescribeInstanceAttributeRequest(
             instance_id=instance_id
@@ -346,7 +351,7 @@ class OpenClient:
                 for vCPU, memGiB in ((x, y) for x in cpus for y in mems):
                     config = OpenClient.Config(key_id, key_secret, f"ecs.{region_id}")
                     client = EcsClient(config)
-                    runtime = util_models.RuntimeOptions()
+                    runtime = OpenClient.Runtime()
 
                     request = ecs_models.DescribeAvailableResourceRequest(
                         region_id=region_id,
@@ -438,7 +443,7 @@ class OpenClient:
             for region_id in region_ids:
                 config = OpenClient.Config(key_id, key_secret, f"ecs.{region_id}")
                 client = EcsClient(config)
-                runtime = util_models.RuntimeOptions()
+                runtime = OpenClient.Runtime()
 
                 request = ecs_models.DescribeImagesRequest(
                     region_id=region_id, status="Available", image_family="acs:ubuntu_22_04_x64"
@@ -468,7 +473,7 @@ class OpenClient:
         """
         config = OpenClient.Config(key_id, key_secret, f"ecs.{region_id}")
         client = EcsClient(config)
-        runtime = util_models.RuntimeOptions()
+        runtime = OpenClient.Runtime()
 
         vpc_id, v_switch_id = OpenClient.createDefaultVSwitch(
             key_id, key_secret, region_id, zone_id
@@ -518,7 +523,7 @@ class OpenClient:
         """
         config = OpenClient.Config(key_id, key_secret, f"vpc.{region_id}")
         client = VpcClient(config)
-        runtime = util_models.RuntimeOptions()
+        runtime = OpenClient.Runtime()
 
         vpc_id = OpenClient.createDefaultVpc(key_id, key_secret, region_id)
         describe_vswitches_request = vpc_models.DescribeVSwitchesRequest(
@@ -555,7 +560,7 @@ class OpenClient:
         """
         config = OpenClient.Config(key_id, key_secret, f"vpc.{region_id}")
         client = VpcClient(config)
-        runtime = util_models.RuntimeOptions()
+        runtime = OpenClient.Runtime()
 
         describe_vpcs_request = vpc_models.DescribeVpcsRequest(
             region_id=region_id, is_default=True
@@ -590,7 +595,7 @@ class OpenClient:
 
         config = OpenClient.Config(key_id, key_secret, f"vpc.{region_id}")
         client = VpcClient(config)
-        runtime = util_models.RuntimeOptions()
+        runtime = OpenClient.Runtime()
 
         if resource_type == "vpc":
             request = vpc_models.DescribeVpcAttributeRequest(
@@ -644,7 +649,7 @@ class OpenClient:
         """
         config = OpenClient.Config(key_id, key_secret, f"ecs.{region_id}")
         client = EcsClient(config)
-        runtime = util_models.RuntimeOptions()
+        runtime = OpenClient.Runtime()
 
         security_groups_request = ecs_models.DescribeSecurityGroupsRequest(
             region_id=region_id, security_group_name=security_group_name
@@ -666,7 +671,7 @@ class OpenClient:
         """
         config = OpenClient.Config(key_id, key_secret, f"ecs.{region_id}")
         client = EcsClient(config)
-        runtime = util_models.RuntimeOptions()
+        runtime = OpenClient.Runtime()
         # create security group
         create_security_group_request = ecs_models.CreateSecurityGroupRequest(
             region_id=region_id, vpc_id=vpc_id, security_group_name=security_group_name
