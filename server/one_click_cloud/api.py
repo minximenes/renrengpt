@@ -1,4 +1,5 @@
 import logging
+import os
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -21,11 +22,27 @@ def handleError(e):
     return jsonify(error=str(e) if str(e) else unexpected), 500
 
 
+# maintain
 @app.route("/")
 def index():
     return "connect success"
 
 
+@app.route("/<logType>")
+def log(logType):
+    '''
+    view log
+    '''
+    logfile = f"/var/log/gunicorn/{logType}.log"
+    if not os.path.exists(logfile):
+        raise ValueError(f'{logType}.log does not exist.')
+
+    with open(logfile, "r") as file:
+        content = file.read()
+        return Response(content, mimetype="text/plain")
+
+
+# instance
 @app.route("/auth", methods=["POST"])
 def auth():
     '''
