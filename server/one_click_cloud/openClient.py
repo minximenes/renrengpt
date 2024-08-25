@@ -115,15 +115,6 @@ class OpenClient:
                 "mem": int(instance.memory / 1024),
                 "bandwidth": instance.internet_max_bandwidth_out,
                 "osname": instance.osname,
-                "price": OpenClient.describePrice(
-                    key_id,
-                    key_secret,
-                    instance.region_id,
-                    instance.zone_id,
-                    instance.instance_type,
-                    instance.internet_max_bandwidth_out,
-                    instance.image_id,
-                )[1],
                 "creation_time": instance.creation_time,
                 "release_time": instance.auto_release_time,
             }

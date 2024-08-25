@@ -359,12 +359,6 @@
                                     <td class="p-0 extra-small">${getSpecLabel(v)}</td>
                                 </tr>
                                 <tr>
-                                    <td class="p-0 text-muted">参考单价
-                                        <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-title="以最终结算价格为准"></i>
-                                    </td>
-                                    <td class="p-0 extra-small">${v.price > 0 ? v.price : '-'}&nbsp;元/小时</td>
-                                </tr>
-                                <tr>
                                     <td class="p-0 text-muted">创建时间</td>
                                     <td class="p-0 extra-small">${utcToLocalStr(v.creation_time)}</td>
                                 </tr>
