@@ -37,10 +37,10 @@ class OpenClient:
         return config
 
     @staticmethod
-    def Runtime(timeout: int = 20 * 1000) -> util_models.RuntimeOptions:
+    def Runtime(timeout: int = 30 * 1000) -> util_models.RuntimeOptions:
         '''
         create runtimeOptions
-        @param: milliseconds(20s)
+        @param: milliseconds(30s)
         @return: RuntimeOptions
         '''
         return util_models.RuntimeOptions(

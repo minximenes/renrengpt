@@ -59,7 +59,7 @@ server {
 }
 EOF
 sudo mv tmp /etc/nginx/sites-available/one_click_client
-sudo ln -s /etc/nginx/sites-available/one_click_client /etc/nginx/sites-enabled/one_click_client
+sudo ln -sf /etc/nginx/sites-available/one_click_client /etc/nginx/sites-enabled/one_click_client
 
 sudo service nginx restart
 sudo service nginx status
