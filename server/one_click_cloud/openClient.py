@@ -653,11 +653,11 @@ class OpenClient:
 
     @staticmethod
     def describeSecurityGroups(
-        key_id: str, key_secret: str, region_id: str, security_group_name: str = "v-_-"
+        key_id: str, key_secret: str, region_id: str, security_group_name: str = "one-click-cloud"
     ) -> List[str]:
         """
         describe security groups
-        @param: key_id, key_secret, region_id, security_group_name(default "v-_-")
+        @param: key_id, key_secret, region_id, security_group_name(default "one-click-cloud")
         @return: security_group_ids
         """
         config = OpenClient.Config(key_id, key_secret, f"ecs.{region_id}")
@@ -675,11 +675,11 @@ class OpenClient:
 
     @staticmethod
     def createSecurityGroup(
-        key_id: str, key_secret: str, region_id: str, vpc_id: str, security_group_name: str = "v-_-"
+        key_id: str, key_secret: str, region_id: str, vpc_id: str, security_group_name: str = "one-click-cloud"
     ) -> str:
         """
         create security group with initial permissions
-        @param: key_id, key_secret, region_id, vpc_id, security_group_name(default "v-_-")
+        @param: key_id, key_secret, region_id, vpc_id, security_group_name(default "one-click-cloud")
         @return: security_group_id
         """
         config = OpenClient.Config(key_id, key_secret, f"ecs.{region_id}")

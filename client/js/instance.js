@@ -880,6 +880,9 @@
             i => new bootstrap.Tooltip(i)
         );
 
+        // fix navigator.clipboard.writeText when http
+        httpClipboardCopy();
+
         /* visitor */
         $('visitor').addEventListener('click', event => {
             $('keyid').value = 'LTAI5t7LSJCM1dCUszcqCHH4';
@@ -1109,6 +1112,28 @@
             'spec-result-page': 'spec-query-page',
             'create-instance-page': 'spec-result-page',
         };
+    }
+
+    /**
+     * navigator.clipboard.writeText donot work when http
+     */
+    function httpClipboardCopy() {
+        if (navigator.clipboard == undefined || navigator.clipboard.writeText == undefined) {
+            navigator.clipboard = {
+                writeText: function (text) {
+                    const input = document.createElement('input');
+                    input.value = text;
+                    document.body.appendChild(input);
+                    input.select();
+                    try {
+                        document.execCommand('copy');
+                    }
+                    finally {
+                        document.body.removeChild(input);
+                    }
+                }
+            }
+        }
     }
 
 })()
