@@ -1,8 +1,8 @@
 (function () {
     'use strict'
 
-    // const SERVICE_RESOURCE = 'http://8.137.83.192:5000';
-    const SERVICE_RESOURCE = 'http://127.0.0.1:5000';
+    const SERVICE_RESOURCE = 'http://8.137.83.192:5000';
+    // const SERVICE_RESOURCE = 'http://127.0.0.1:5000';
 
     function $(id) {
         return document.getElementById(id);
@@ -110,18 +110,24 @@
         }
         const oldDatas = getUserdatas();
         const newDatas = oldDatas ? [...oldDatas, newData] : [newData];
-        localStorage.setItem('userdatas', JSON.stringify(newDatas));
+        const newDatasStr = JSON.stringify(newDatas);
+        localStorage.setItem('userdatas', newDatasStr);
+        setUserdatasApi(newDatasStr);
         return newDatas;
     }
     function removeUserdatas() {
         localStorage.removeItem('userdatas');
+        removeUserdatasApi();
     }
     function removeUserdataBySeq(seq) {
         const newDatas = getUserdatas().filter(v => v.seq != seq);
         if (newDatas.length > 0) {
-            localStorage.setItem('userdatas', JSON.stringify(newDatas));
+            const newDatasStr = JSON.stringify(newDatas);
+            localStorage.setItem('userdatas', newDatasStr);
+            setUserdatasApi(newDatasStr);
         } else {
             localStorage.removeItem('userdatas');
+            removeUserdatasApi();
         }
         return newDatas;
     }
@@ -174,7 +180,7 @@
         const token = getToken();
         if (token) {
             // user info modal
-            renderUserInfo();
+            getUserdatasApi();
             // main page
             getInstanceListApi();
         } else {
@@ -235,7 +241,7 @@
                 removeMeStorage();
             }
             // user info modal
-            renderUserInfo();
+            getUserdatasApi();
             // get instance list
             clearInstanceList();
             getInstanceListApi();
@@ -855,6 +861,85 @@
     }
 
     /**
+     * api of userdatas
+     */
+    function getUserdatasApi() {
+        const token = getToken();
+        if (token) {
+            const headers = {
+                'Authorization': token
+            };
+            const options = {
+                method: 'GET',
+                headers: headers
+            };
+            fetch(`${SERVICE_RESOURCE}/getuserdatas`, options)
+            .then(response => response.json())
+            .then(data => {
+                handleApiData(data);
+                // userdatas
+                const user_datas = data.user_datas;
+                if (user_datas) {
+                    localStorage.setItem('userdatas', user_datas);
+                } else {
+                    localStorage.removeItem('userdatas');
+                }
+            })
+            .catch(error => {
+                console.log(error);
+            })
+            .finally(() => {
+                renderUserInfo();
+            });
+        }
+    }
+    function setUserdatasApi(datastr) {
+        const token = getToken();
+        if (token) {
+            const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': token
+            };
+            const jsonBody = {
+                user_datas: datastr
+            };
+            const options = {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(jsonBody)
+            };
+            fetch(`${SERVICE_RESOURCE}/setuserdatas`, options)
+            .then(response => response.json())
+            .then(data => {
+                handleApiData(data);
+            })
+            .catch(error => {
+                console.log(error);
+            });
+        }
+    }
+    function removeUserdatasApi() {
+        const token = getToken();
+        if (token) {
+            const headers = {
+                'Authorization': token
+            };
+            const options = {
+                method: 'GET',
+                headers: headers
+            };
+            fetch(`${SERVICE_RESOURCE}/removeuserdatas`, options)
+            .then(response => response.json())
+            .then(data => {
+                handleApiData(data);
+            })
+            .catch(error => {
+                console.log(error);
+            });
+        }
+    }
+
+    /**
      * window onload
      */
     window.onload = function () {
@@ -956,7 +1041,6 @@
         });
         /* clear for quit */
         $('user-quit-btn').addEventListener('click', event => {
-            removeToken();
             if ($('user-clearme').checked) {
                 // clear all
                 removeMeStorage();
@@ -965,6 +1049,7 @@
                 // only clear secret
                 localStorage.removeItem('keysecret');
             }
+            removeToken();
             recoverFromStorage();
         });
 

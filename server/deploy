@@ -66,4 +66,7 @@ EOF
 sudo mv tmp /etc/logrotate.d/gunicorn
 sudo logrotate /etc/logrotate.d/gunicorn
 
+# user_data
+mkdir -p /home/one_click_data
+
 echo "end"

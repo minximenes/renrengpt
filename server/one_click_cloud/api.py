@@ -20,6 +20,7 @@ ORIGIN_RESOURCE = [
     "http://sovitsgpt.com",
     "http://renrengpt.cn",
 ]
+DATA_DIR = "/home/one_click_data/"
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": ORIGIN_RESOURCE}})
@@ -183,6 +184,51 @@ def createInstance(varified):
         )
     except Exception as e:
         raise ValueError(e.data.get("Message") if e.data else e.message)
+
+    return jsonify(new_token=varified.get("new_token"))
+
+
+@app.route("/getuserdatas")
+@varifyRequestTokenWrapper
+def getUserdatas(varified):
+    '''
+    get userdata
+    '''
+    key_id, _ = splitSecret(varified)
+    user_datas = None
+    datafile = os.path.join(DATA_DIR, key_id)
+    if os.path.exists(datafile):
+        with open(datafile, "r") as f:
+            user_datas = f.read()
+
+    return jsonify(new_token=varified.get("new_token"), user_datas=user_datas)
+
+
+@app.route("/setuserdatas", methods=["POST"])
+@varifyRequestTokenWrapper
+def setUserdatas(varified):
+    '''
+    set userdata
+    '''
+    key_id, _ = splitSecret(varified)
+    user_datas = request.get_json().get("user_datas")
+    datafile = os.path.join(DATA_DIR, key_id)
+    with open(datafile, "w") as f:
+        f.write(user_datas)
+
+    return jsonify(new_token=varified.get("new_token"))
+
+
+@app.route("/removeuserdatas")
+@varifyRequestTokenWrapper
+def removeUserdatas(varified):
+    '''
+    remove userdata
+    '''
+    key_id, _ = splitSecret(varified)
+    datafile = os.path.join(DATA_DIR, key_id)
+    if os.path.exists(datafile):
+        os.remove(datafile)
 
     return jsonify(new_token=varified.get("new_token"))
 
