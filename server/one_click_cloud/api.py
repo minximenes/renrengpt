@@ -1,5 +1,9 @@
-import logging
+if __name__ == "__main__":
+    import os, sys
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
+
 import os
+import logging
 
 from flask import Flask, jsonify, request, Response
 from flask_cors import CORS

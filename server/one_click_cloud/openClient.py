@@ -1,7 +1,9 @@
+import os
 import time
 
 from concurrent import futures
 from datetime import datetime, timedelta
+from flask import current_app
 from itertools import groupby
 from typing import Dict, List, Optional, Set, Tuple
 
@@ -17,6 +19,15 @@ from one_click_cloud.auth import generatePwd
 class OpenClient:
     def __init__(self):
         pass
+
+    @staticmethod
+    def getWorkers(tasknum: int) -> int:
+        '''
+        get max_workers of ThreadPoolExecutor
+        @param: tasknum
+        @return: max_workers
+        '''
+        return tasknum if current_app.config.get("DEBUG") else 2 * os.cpu_count() + 1
 
     @staticmethod
     def Config(
@@ -76,9 +87,9 @@ class OpenClient:
         @return: instances' dict
         """
         instances, future_rlts = [], []
-        thread_num = len(region_ids)
+        tasknum = len(region_ids)
 
-        with futures.ThreadPoolExecutor(max_workers=thread_num) as executor:
+        with futures.ThreadPoolExecutor(max_workers=OpenClient.getWorkers(tasknum)) as executor:
             for region_id in region_ids:
                 config = OpenClient.Config(key_id, key_secret, f"ecs.{region_id}")
                 client = EcsClient(config)
@@ -346,9 +357,9 @@ class OpenClient:
         @return: instance_types
         """
         instance_types, future_rlts = [], {}
-        thread_num = len(region_ids) * len(cpus) * len(mems)
+        tasknum = len(region_ids) * len(cpus) * len(mems)
 
-        with futures.ThreadPoolExecutor(max_workers=thread_num) as executor:
+        with futures.ThreadPoolExecutor(max_workers=OpenClient.getWorkers(tasknum)) as executor:
             for region_id in region_ids:
                 for vCPU, memGiB in ((x, y) for x in cpus for y in mems):
                     config = OpenClient.Config(key_id, key_secret, f"ecs.{region_id}")
@@ -400,9 +411,9 @@ class OpenClient:
         image_ids = OpenClient.describeUbuntuImages(key_id, key_secret, region_ids)
         # price
         instance_prices, future_rlts = [], {}
-        thread_num = len(instance_types)
+        tasknum = len(instance_types)
 
-        with futures.ThreadPoolExecutor(max_workers=thread_num) as executor:
+        with futures.ThreadPoolExecutor(max_workers=OpenClient.getWorkers(tasknum)) as executor:
             for instance_tp in instance_types:
                 image_id = image_ids[instance_tp["region_id"]]
                 future_rlt = executor.submit(
@@ -439,9 +450,9 @@ class OpenClient:
         @return: image_ids
         """
         image_ids, future_rlts = {}, {}
-        thread_num = len(region_ids)
+        tasknum = len(region_ids)
 
-        with futures.ThreadPoolExecutor(max_workers=thread_num) as executor:
+        with futures.ThreadPoolExecutor(max_workers=OpenClient.getWorkers(tasknum)) as executor:
             for region_id in region_ids:
                 config = OpenClient.Config(key_id, key_secret, f"ecs.{region_id}")
                 client = EcsClient(config)
