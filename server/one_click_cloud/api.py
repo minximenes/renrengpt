@@ -185,7 +185,7 @@ def createInstance(varified):
     except Exception as e:
         raise ValueError(e.data.get("Message") if e.data else e.message)
 
-    return jsonify(new_token=varified.get("new_token"))
+    return jsonify(new_token=varified.get("new_token"), region_id=region_id)
 
 
 @app.route("/getuserdatas")

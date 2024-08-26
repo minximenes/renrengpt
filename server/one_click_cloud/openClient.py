@@ -88,6 +88,8 @@ class OpenClient:
         """
         instances, future_rlts = [], []
         tasknum = len(region_ids)
+        if tasknum == 0:
+            return []
 
         with futures.ThreadPoolExecutor(max_workers=OpenClient.getWorkers(tasknum)) as executor:
             for region_id in region_ids:

@@ -1,8 +1,8 @@
 (function () {
     'use strict'
 
-    const SERVICE_RESOURCE = 'http://8.137.83.192:5000';
-    // const SERVICE_RESOURCE = 'http://127.0.0.1:5000';
+    // const SERVICE_RESOURCE = 'http://8.137.83.192:5000';
+    const SERVICE_RESOURCE = 'http://127.0.0.1:5000';
 
     function $(id) {
         return document.getElementById(id);
@@ -117,7 +117,6 @@
     }
     function removeUserdatas() {
         localStorage.removeItem('userdatas');
-        removeUserdatasApi();
     }
     function removeUserdataBySeq(seq) {
         const newDatas = getUserdatas().filter(v => v.seq != seq);
@@ -190,6 +189,27 @@
             naviToPage(['login-page', 'footer']);
         }
     }
+
+    /**
+     * region in use
+     * ['v1', 'v2']
+     */
+    function getRegionInuse() {
+        const v = sessionStorage.getItem('regioninuse');
+        return v ? JSON.parse(v) : v;
+    }
+    function setRegionInuse(v) {
+        sessionStorage.setItem('regioninuse', JSON.stringify([...new Set(v)]));
+    }
+    function addRegionInuse(v) {
+        // remove duplicate
+        const newData = [...new Set([...getRegionInuse(), v])]
+        sessionStorage.setItem('regioninuse', JSON.stringify(newData));
+    }
+    function removeRegionInuse() {
+        sessionStorage.removeItem('regioninuse');
+    }
+
     /**
      * page navigation
      */
@@ -281,7 +301,7 @@
                 'Authorization': token
             };
             const jsonBody = {
-                region_ids: Object.keys(getRegions())
+                region_ids: getRegionInuse() ?? Object.keys(getRegions())
             };
             const options = {
                 method: 'POST',
@@ -295,23 +315,29 @@
                 // instance list
                 clearInstanceList();
                 const instances = data.instances;
-                if (instances.length == 0) {
-                    renderNoInstance();
-                    return;
-                }
-                renderInstanceList(instances);
-                naviToPage(['nav-header', 'instance-list-page', 'footer']);
-
                 const instanceListPageNav = $('instance-list-page-nav');
                 if (instanceListPageNav.dataset.new == '1') {
-                    showAlert(instanceListPageNav, 'info', '实例已成功创建');
+                    renderInstanceList(instances);
+                    naviToPage(['nav-header', 'instance-list-page', 'footer']);
+
+                    showAlert(instanceListPageNav, 'info', '实例已成功创建；如果显示不及时请刷新');
                     instanceListPageNav.dataset.new = '0';
+                } else {
+                    setRegionInuse(instances.map(v => v.region_id));
+                    if (instances.length == 0) {
+                        renderNoInstance();
+                    } else {
+                        renderInstanceList(instances);
+                        naviToPage(['nav-header', 'instance-list-page', 'footer']);
+                    }
                 }
             })
             .catch(error => {
                 naviToPage(['nav-header', 'instance-list-page', 'footer']);
                 showAlert($('instance-list-page-nav'), 'danger', error.message);
             });
+        } else {
+            naviToPage(['login-page', 'footer']);
         }
     }
     /* render instance list */
@@ -457,6 +483,8 @@
                 naviToPage(['nav-header', 'instance-list-page', 'footer']);
                 showAlert($('instance-list-page-nav'), 'danger', error.message);
             });
+        } else {
+            naviToPage(['login-page', 'footer']);
         }
     }
     /**
@@ -577,6 +605,8 @@
                 showAlert($('instance-detail-page-nav'), 'danger', error.message);
                 gotNormal($('instance-release-btn'));
             });
+        } else {
+            naviToPage(['login-page', 'footer']);
         }
     }
 
@@ -694,6 +724,8 @@
                 naviToPage(['nav-header', 'spec-query-page', 'footer']);
                 showAlert($('spec-query-page-nav'), 'danger', error.message);
             });
+        } else {
+            naviToPage(['login-page', 'footer']);
         }
     }
 
@@ -850,6 +882,7 @@
             .then(data => {
                 handleApiData(data);
                 // created
+                addRegionInuse(data.region_id);
                 $('instance-list-page-nav').dataset.new = '1';
                 getInstanceListApi();
             })
@@ -857,6 +890,8 @@
                 naviToPage(['nav-header', 'create-instance-page', 'footer']);
                 showAlert($('create-instance-page-nav'), 'danger', error.message);
             });
+        } else {
+            naviToPage(['login-page', 'footer']);
         }
     }
 
@@ -1045,6 +1080,7 @@
                 // clear all
                 removeMeStorage();
                 removeUserdatas();
+                removeRegionInuse();
             } else {
                 // only clear secret
                 localStorage.removeItem('keysecret');
