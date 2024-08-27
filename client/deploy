@@ -35,6 +35,10 @@ source_compress() {
         *.html|*.css) html_compress $inputfile $outputfile;;
         *.js) js_c_m $inputfile $outputfile;;
     esac
+    # clear old one
+    if [ "$outputfile" != "$inputfile" ]; then
+        sudo rm -f $inputfile
+    fi
 }
 
 wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/client/instance.html
@@ -92,6 +96,7 @@ server {
                 sovitsgpt.com
                 renrengpt.cn
                 8.137.83.192;
+    add_header Cache-Control no-store;
     location / {
         root /var/www/one_click_client;
         index instance.html;
