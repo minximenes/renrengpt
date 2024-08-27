@@ -660,7 +660,7 @@
                                 </div>
                             </div>
                             <div class="mt-1" id="user-data-content-${i}">
-                                <pre class="m-0 prettyprint lang-sh linenums pre-scrollable pre-abbr">${base64ToUnistr(v.content)}</pre>
+                                <pre class="m-0 prettyprint lang-sh linenums">${base64ToUnistr(v.content)}</pre>
                             </div>
                         </div>
                     </div>
@@ -1236,7 +1236,7 @@
         if (navigator.clipboard == undefined || navigator.clipboard.writeText == undefined) {
             navigator.clipboard = {
                 writeText: function (text) {
-                    const input = document.createElement('input');
+                    const input = document.createElement('textarea');
                     input.value = text;
                     document.body.appendChild(input);
                     input.select();

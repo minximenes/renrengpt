@@ -22,9 +22,6 @@ echo "install dependencies"
 sudo pip3 install -q -r requirements.txt
 
 echo "configurate gunicorn"
-# log
-gunicornLogDir=/var/log/gunicorn
-sudo rm -rf $gunicornLogDir && sudo mkdir -p $gunicornLogDir
 # service
 pdir=$(pwd)
 cat << EOF > tmp
@@ -51,9 +48,9 @@ sudo systemctl restart one_click_cloud.service
 sudo systemctl status one_click_cloud.service
 
 echo "configurate logrotate"
-# separate logfile
+# log
 cat <<EOF > tmp
-$gunicornLogDir/*.log {
+/var/log/gunicorn/*.log {
     daily
     dateext
     dateformat -%Y-%m-%d

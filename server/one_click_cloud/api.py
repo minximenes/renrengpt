@@ -21,9 +21,12 @@ ORIGIN_RESOURCE = [
     "http://renrengpt.cn",
 ]
 DATA_DIR = "/home/one_click_data/"
+# 100kB
+DATA_LENLIMIT = 100 * 1024
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": ORIGIN_RESOURCE}})
+app.config["MAX_CONTENT_LENGTH"] = DATA_LENLIMIT
 
 
 @app.errorhandler(Exception)
