@@ -3,6 +3,10 @@
 echo "update and install"
 sudo apt-get update >/dev/null 2>&1
 sudo apt-get install -y nginx >/dev/null
+sudo apt-get install -y nodejs npm >/dev/null
+# avoid timeout
+npm config set registry http://registry.npm.taobao.org
+npm install -g html-minifier uglify-js >/dev/null
 
 echo "create project dir"
 homeDir=/var/www/one_click_client
@@ -10,23 +14,71 @@ sudo rm -rf $homeDir && sudo mkdir -p $homeDir
 cd $homeDir
 
 echo "download sources"
+# compress and mangle
+__HASH__=$(date +%Y%m%d%H%M%S)
+source_compress() {
+    # html | css
+    html_compress() {
+        sudo html-minifier $1 -o $2 \
+        --collapse-whitespace --remove-comments --remove-optional-tags \
+        --remove-redundant-attributes --use-short-doctype --remove-tag-whitespace \
+        --remove-empty-attributes --remove-script-type-attributes --remove-style-link-type-attributes \
+        --minify-css true --minify-js true
+    }
+    # js
+    js_c_m() {
+        sudo uglifyjs $1 -o $2 --compress --mangle
+    }
+    inputfile=$1
+    outputfile=$([ -n "$2" ] && echo "$2" || echo "$1")
+    case "$1" in
+        *.html|*.css) html_compress $inputfile $outputfile;;
+        *.js) js_c_m $inputfile $outputfile;;
+    esac
+}
+
 wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/client/instance.html
 # page link
 sed -i 's/.\/privacy.html/\/privacy/' ./instance.html
 sed -i 's/.\/support.html/\/support/' ./instance.html
 sed -i 's/.\/terms.html/\/terms/' ./instance.html
+source_compress instance.html
+sudo sed -i "s/\/instance.js/\/$__HASH__.instance.js/" instance.html
+sudo sed -i "s/\/instance.css/\/$__HASH__.instance.css/" instance.html
+
 wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/client/privacy.html
+source_compress privacy.html
+sudo sed -i "s/\/footer.js/\/$__HASH__.footer.js/" privacy.html
+
 wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/client/support.html
+source_compress support.html
+sudo sed -i "s/\/footer.js/\/$__HASH__.footer.js/" support.html
+
 wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/client/terms.html
-wget -q -P ./js https://raw.githubusercontent.com/minximenes/renrengpt/main/client/js/instance.js
+source_compress terms.html
+sudo sed -i "s/\/footer.js/\/$__HASH__.footer.js/" terms.html
+
+sudo mkdir -p js && cd js
+wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/client/js/instance.js
 # api url
 server_ip=$(curl -s ifconfig.me)
-sed -i "s/127.0.0.1/$server_ip/" ./js/instance.js
-wget -q -P ./js https://raw.githubusercontent.com/minximenes/renrengpt/main/client/js/footer.js
+sed -i "s/127.0.0.1/$server_ip/" instance.js
+source_compress instance.js $__HASH__.instance.js
+
+wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/client/js/footer.js
 # page link
-sed -i 's/.\/instance.html/\//' ./js/footer.js
-wget -q -P ./css https://raw.githubusercontent.com/minximenes/renrengpt/main/client/css/instance.css
-wget -q -P ./img https://raw.githubusercontent.com/minximenes/renrengpt/main/client/img/favicon.svg
+sed -i 's/.\/instance.html/\//' footer.js
+source_compress footer.js $__HASH__.footer.js
+cd ..
+
+sudo mkdir -p css && cd css
+wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/client/css/instance.css
+source_compress instance.css $__HASH__.instance.css
+cd ..
+
+sudo mkdir -p img && cd img
+wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/client/img/favicon.svg
+cd ..
 
 echo "configurate nginx"
 # nginx.conf
@@ -63,3 +115,10 @@ sudo ln -sf /etc/nginx/sites-available/one_click_client /etc/nginx/sites-enabled
 
 sudo service nginx restart
 sudo service nginx status
+
+echo "configurate logrotate"
+# log
+sudo sed -i 's/www-data/root/' /etc/logrotate.d/nginx
+sudo logrotate /etc/logrotate.d/nginx
+
+echo "end"

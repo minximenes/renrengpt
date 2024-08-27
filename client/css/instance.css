@@ -19,7 +19,7 @@ html {
     margin-right: 0.25rem;
 }
 
-/*<! for prettyprint linenums -->*/
+/* <!-- for prettyprint linenums --> */
 li.L0,
 li.L1,
 li.L2,
@@ -31,7 +31,7 @@ li.L8 {
     list-style-type: decimal !important;
 }
 
-/*<! bash win's height -->*/
+/* <!-- bash win's height --> */
 .pre-abbr {
     max-height: 400px;
 }
