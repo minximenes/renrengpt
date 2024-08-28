@@ -3,6 +3,7 @@
 
     // const SERVICE_RESOURCE = 'http://8.137.83.192:5000';
     const SERVICE_RESOURCE = 'http://127.0.0.1:5000';
+    const WAITING_SHOWN_LISTENER = [];
 
     function $(id) {
         return document.getElementById(id);
@@ -214,20 +215,39 @@
      * page navigation
      */
     function naviToPage(divIDs) {
-        clearAlerts(document);
-
+        endWaiting();
         document.querySelectorAll('div[id$="page"], div[id$="header"], div[id$="footer"]').forEach(
             div => div.classList.add('d-none')
         );
+        clearAlerts(document);
         window.scrollTo({top: 0, behavior: 'auto'});
-        divIDs.forEach(id => $(id).classList.remove('d-none'));
 
+        divIDs.forEach(id => $(id).classList.remove('d-none'));
         // hide back-button
         if ($('instance-list-page').classList.contains('d-none')) {
             $('back-btn').classList.remove('d-none');
         } else {
             $('back-btn').classList.add('d-none');
         }
+    }
+
+    /**
+     * spinner modal
+     */
+    function beginWaiting(txt, eventAfterShown) {
+        $('waiting-modal').addEventListener('shown.bs.modal', eventAfterShown);
+        WAITING_SHOWN_LISTENER.push(eventAfterShown);
+        $('waiting-modal-txt').innerHTML = txt;
+        $('waiting-modal-show').click();
+    }
+    function endWaiting() {
+        if ($('waiting-modal').classList.contains('show')) {
+            $('waiting-modal').removeEventListener('shown.bs.modal', WAITING_SHOWN_LISTENER.pop());
+            $('waiting-modal-close').click();
+        }
+    }
+    function showWaitingTxt(txt) {
+        $('waiting-modal-txt').innerHTML = txt;
     }
 
     /**
@@ -414,8 +434,9 @@
                 setPageYOffset('instance-list-page', window.scrollY);
 
                 const aElem = event.target;
-                naviToPage(['spinner-header', 'footer']);
-                getInstanceDetailApi(aElem.dataset.region, aElem.textContent);
+                $('instance-detail-region').dataset.id = aElem.dataset.region;
+                $('instance-detail-id').dataset.id = aElem.textContent;
+                beginWaiting('', getInstanceDetailApi);
             });
         });
         $('instance-row').querySelectorAll('button[id^="ipaddr-"]').forEach(btn => {
@@ -455,7 +476,7 @@
     /**
      * get instance detail
      */
-    function getInstanceDetailApi(regionid, instanceid) {
+    function getInstanceDetailApi() {
         const token = getToken();
         if (token) {
             const headers = {
@@ -463,8 +484,8 @@
                 'Authorization': token
             };
             const jsonBody = {
-                region_id: regionid,
-                instance_id: instanceid
+                region_id: $('instance-detail-region').dataset.id,
+                instance_id: $('instance-detail-id').dataset.id
             };
             const options = {
                 method: 'POST',
@@ -688,13 +709,22 @@
     /**
      * query spec result
      */
-    function querySpecResultApi(regionRange, cpuOp, memOp, bandwidthOp) {
+    function querySpecResultApi() {
         const token = getToken();
         if (token) {
             const headers = {
                 'Content-Type': 'application/json',
                 'Authorization': token
             };
+            // parameters
+            function radio$(name) {
+                return $('spec-query-page').querySelector(`input[type="radio"][name="${name}"]:checked`);
+            }
+            const regionRange = $('region-op').value;
+            const cpuOp = radio$('cpu-op')?.value ?? $('cpu-op-other').value;
+            const memOp = radio$('mem-op')?.value ?? $('mem-op-other').value;
+            const bandwidthOp = radio$('bandwidth-op')?.value ?? $('bandwidth-op-other').value;
+
             const jsonBody = {
                 region_ids: getRegionsInRange(regionRange),
                 cpus: cpuOp.split(',').map(v => parseInt(v)),
@@ -860,13 +890,18 @@
     /**
      * create instance
      */
-    function createInstanceApi(typeJsn, aliveHour, dataContent) {
+    function createInstanceApi() {
         const token = getToken();
         if (token) {
             const headers = {
                 'Content-Type': 'application/json',
                 'Authorization': token
             };
+            // parameters
+            const typeJsn = JSON.parse($('create-instance-type').dataset.jsn);
+            const aliveHour = $('alivehour-op').value;
+            const dataContent = $('userdata-op-area').querySelector('.btn-primary')?.dataset.content;
+
             const jsonBody = {
                 ...typeJsn,
                 alive_minutes: aliveHour * 60,
@@ -1016,8 +1051,7 @@
             const loginForm = event.currentTarget;
             if (loginForm.checkValidity()) {
                 loginForm.classList.remove('was-validated');
-                naviToPage(['spinner-header', 'footer']);
-                authApi();
+                beginWaiting('', authApi);
             } else {
                 loginForm.classList.add('was-validated');
             }
@@ -1056,8 +1090,7 @@
             if (targetPageId) {
                 // instance released
                 if (curPageId == 'instance-detail-page' && $('instance-release-btn').classList.contains('disabled')) {
-                    naviToPage(['spinner-header', 'footer']);
-                    getInstanceListApi();
+                    beginWaiting('', getInstanceListApi);
                 } else {
                     naviToPage(['nav-header', targetPageId, 'footer']);
                     switch (targetPageId) {
@@ -1071,8 +1104,7 @@
             }
         });
         $('main-btn').addEventListener('click', event => {
-            naviToPage(['spinner-header', 'footer']);
-            getInstanceListApi();
+            beginWaiting('', getInstanceListApi);
         });
         /* clear for quit */
         $('user-quit-btn').addEventListener('click', event => {
@@ -1174,16 +1206,7 @@
             $('bandwidth-op-default').click();
         });
         $('spec-query-btn').addEventListener('click', event => {
-            naviToPage(['spinner-header', 'footer']);
-
-            function radio$(name) {
-                return $('spec-query-page').querySelector(`input[type="radio"][name="${name}"]:checked`);
-            }
-            const regionRange = $('region-op').value;
-            const cpuOp = radio$('cpu-op')?.value ?? $('cpu-op-other').value;
-            const memOp = radio$('mem-op')?.value ?? $('mem-op-other').value;
-            const bandwidthOp = radio$('bandwidth-op')?.value ?? $('bandwidth-op-other').value;
-            querySpecResultApi(regionRange, cpuOp, memOp, bandwidthOp);
+            beginWaiting('', querySpecResultApi);
         });
         $('region-option-modal').querySelectorAll('label.btn').forEach(btn => {
             btn.addEventListener('click', event => {
@@ -1208,12 +1231,7 @@
         });
         /* create instance */
         $('instance-create-confirm').addEventListener('click', event => {
-            naviToPage(['spinner-header', 'footer']);
-
-            const typeJsn = JSON.parse($('create-instance-type').dataset.jsn);
-            const aliveHour = $('alivehour-op').value;
-            const dataContent = $('userdata-op-area').querySelector('.btn-primary')?.dataset.content;
-            createInstanceApi(typeJsn, aliveHour, dataContent);
+            beginWaiting('', createInstanceApi);
         });
     }
 
@@ -1251,4 +1269,4 @@
         }
     }
 
-})()
+})();

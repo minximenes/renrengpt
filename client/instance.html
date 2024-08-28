@@ -729,7 +729,21 @@
                     </div>
                 </div>
             </div>
-
+            <!-- waiting-modal -->
+            <div class="modal fade small" id="waiting-modal" data-bs-backdrop="static">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0 bg-transparent">
+                        <div class="modal-header d-none">
+                            <button data-bs-toggle="modal" data-bs-target="#waiting-modal" id="waiting-modal-show"></button>
+                            <button data-bs-dismiss="modal" id="waiting-modal-close"></button>
+                        </div>
+                        <div class="modal-body text-center text-white">
+                            <div class="spinner-border"></div>
+                            <div class="mt-3" id="waiting-modal-txt"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </body>
 </html>
