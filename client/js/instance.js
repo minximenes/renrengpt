@@ -1255,7 +1255,10 @@
             $('bandwidth-op-default').click();
         });
         $('spec-query-btn').addEventListener('click', event => {
-            beginWaiting('取得规格列表', querySpecResultApi);
+            beginWaiting(
+                '取得规格列表<br><span class="extra-small">价格查询可能耗时较长<span>',
+                querySpecResultApi
+            );
         });
         $('region-option-modal').querySelectorAll('label.btn').forEach(btn => {
             btn.addEventListener('click', event => {
