@@ -412,7 +412,7 @@
     /* render instance list */
     function renderNoInstance() {
         naviToPage(['nav-header', 'instance-list-page', 'footer']);
-        showAlert($('instance-list-page-nav'), 'info', '不存在竞价实例');
+        showAlert($('instance-list-page-nav'), 'info', '尚未创建竞价实例');
     }
     function clearInstanceList() {
         $('instance-row').innerHTML = '';
