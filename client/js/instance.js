@@ -606,8 +606,8 @@
             logElem.href = `http://${v.pubip_addrs[0]}:5000/init-output`;
             logElem.textContent = '查看';
         } else {
-            logElem.target = '_self';
-            logElem.href = '#';
+            logElem.target = '';
+            logElem.href = '';
             logElem.textContent = '无';
         }
         const userDataElem = detail$('userdata');
@@ -812,7 +812,7 @@
     */
     function renderNoSpec() {
         naviToPage(['nav-header', 'spec-query-page', 'footer']);
-        showAlert($('spec-query-page-nav'), 'info', '符合条件的规格不存在或没有库存');
+        showAlert($('spec-query-page-nav'), 'info', '不存在条件符合的规格或当前没有库存');
     }
     function clearSpecResult() {
         $('spec-row').innerHTML = '';
