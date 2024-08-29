@@ -241,6 +241,7 @@
      * spinner modal
      */
     function beginWaiting(txt, eventAfterShown) {
+        clearAlerts(document);
         $('waiting-modal').addEventListener('shown.bs.modal', eventAfterShown);
         WAITING_SHOWN_LISTENER.push(eventAfterShown);
         $('waiting-modal-txt').innerHTML = txt;
@@ -606,8 +607,8 @@
             logElem.href = `http://${v.pubip_addrs[0]}:5000/init-output`;
             logElem.textContent = '查看';
         } else {
-            logElem.target = '';
-            logElem.href = '';
+            logElem.removeAttribute('target');
+            logElem.removeAttribute('href');
             logElem.textContent = '无';
         }
         const userDataElem = detail$('userdata');
@@ -1249,7 +1250,7 @@
             $(regionOp).checked = true;
         });
         $('spec-reset-btn').addEventListener('click', event => {
-            $('region-option-modal').querySelector('label.btn[for="out"]').click();
+            $('region-option-modal').querySelector('label.btn[for="eu-west-1"]').click();
             $('cpu-op-default').click();
             $('mem-op-default').click();
             $('bandwidth-op-default').click();
