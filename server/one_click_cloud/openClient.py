@@ -75,7 +75,12 @@ class OpenClient:
             resource_type="instance", instance_charge_type="SpotAsPriceGo"
         )
         response = client.describe_regions_with_options(request, runtime)
-        return {r.region_id: r.local_name for r in response.body.regions.region}
+        # tunning dubai, Indonesia
+        return {
+            r.region_id: r.local_name
+            for r in response.body.regions.region
+            if r.region_id not in ["me-east-1", "ap-southeast-5"]
+        }
 
     @staticmethod
     def describeInstances(

@@ -1,6 +1,7 @@
 (function () {
     'use strict'
 
+    const BUSY_SPINNER = '&nbsp;<span class="spinner-grow spinner-grow-sm"></span>'
     // const SERVICE_RESOURCE = 'http://8.137.83.192:5000';
     const SERVICE_RESOURCE = 'http://127.0.0.1:5000';
     const WAITING_SHOWN_LISTENER = [];
@@ -14,18 +15,18 @@
     function gotBusy(btnElem) {
         const btnClass = btnElem.classList;
         btnClass.add('disabled');
-        btnElem.innerHTML = '<span class="spinner-grow spinner-grow-sm"></span>&nbsp;' + btnElem.innerHTML;
+        btnElem.innerHTML = btnElem.innerHTML + BUSY_SPINNER;
     }
     function gotNormal(btnElem) {
         const btnClass = btnElem.classList;
         btnClass.remove('disabled');
         btnClass.replace('btn-secondary', 'btn-primary');
-        btnElem.innerHTML = btnElem.innerHTML.replace('<span class="spinner-grow spinner-grow-sm"></span>&nbsp;', '');
+        btnElem.innerHTML = btnElem.innerHTML.replace(BUSY_SPINNER, '');
     }
     function gotFinish(btnElem) {
         const btnClass = btnElem.classList;
         btnClass.replace('btn-primary', 'btn-secondary');
-        btnElem.innerHTML = btnElem.innerHTML.replace('<span class="spinner-grow spinner-grow-sm"></span>&nbsp;', '');
+        btnElem.innerHTML = btnElem.innerHTML.replace(BUSY_SPINNER, '');
     }
     /**
      * alert msg operation
@@ -64,25 +65,26 @@
     /**
      * local storage operation
      */
+    /* key {value, expire} */
     /* default 30 days */
     function getMilliseconds(hours = 30 * 24) {
         // milliseconds * seconds * minutes
         return 1000 * 60 * 60 * hours;
     }
-    function setStorageByKey(key) {
+    function setMeByKey(key) {
         localStorage.setItem(key, JSON.stringify({
             'value': $(key).value,
             'expire': Date.now() + getMilliseconds()
         }));
     }
-    function recoverFromStorageByKey(key) {
+    function recoverMeByKey(key) {
         $(key).value = '';
         const item = localStorage.getItem(key);
         if (item) {
             const itemjsn = JSON.parse(item);
             if (Date.now() <= itemjsn.expire) {
                 $(key).value = itemjsn.value;
-                setStorageByKey(key);
+                setMeByKey(key);
                 return true;
             } else {
                 localStorage.removeItem(key);
@@ -90,20 +92,26 @@
         }
         return false;
     }
-    function setMeStorage() {
-        setStorageByKey('keyid');
-        setStorageByKey('keysecret');
+    function setMyKey() {
+        setMeByKey('keyid');
+        setMeByKey('keysecret');
     }
-    function removeMeStorage() {
+    function removeMyKey() {
         localStorage.removeItem('keyid');
         localStorage.removeItem('keysecret');
     }
-    /* userdatas */
+    /* userdatas {seq, name, content} */
     function getUserdatas() {
-        const userdatas = localStorage.getItem('userdatas');
-        return userdatas ? JSON.parse(userdatas) : userdatas;
+        const v = localStorage.getItem('userdatas');
+        return v ? JSON.parse(v) : v;
     }
-    function setUserdatas(dataName, dataContent) {
+    function setUserdatas(v) {
+        localStorage.setItem('userdatas', v);
+    }
+    function removeUserdatas() {
+        localStorage.removeItem('userdatas');
+    }
+    function setUserdata(dataName, dataContent) {
         const newData = {
             seq: Date.now(),
             name: unistrToBase64(dataName),
@@ -116,10 +124,7 @@
         setUserdatasApi(newDatasStr);
         return newDatas;
     }
-    function removeUserdatas() {
-        localStorage.removeItem('userdatas');
-    }
-    function removeUserdataBySeq(seq) {
+    function removeUserdata(seq) {
         const newDatas = getUserdatas().filter(v => v.seq != seq);
         if (newDatas.length > 0) {
             const newDatasStr = JSON.stringify(newDatas);
@@ -131,24 +136,39 @@
         }
         return newDatas;
     }
-
-    /**
-     * session storage operation
-    */
+    /* token */
     function setToken(token) {
-        sessionStorage.setItem('token', token);
+        localStorage.setItem('token', token);
     }
     function getToken() {
-        return sessionStorage.getItem('token');
+        return localStorage.getItem('token');
     }
     function removeToken() {
-        sessionStorage.removeItem('token');
+        localStorage.removeItem('token');
     }
+    /* region in use [] */
+    function getRegionInuseOrDefault() {
+        const v = localStorage.getItem('regioninuse');
+        return v ? JSON.parse(v) : [];
+    }
+    function setRegionInuse(v) {
+        localStorage.setItem('regioninuse', JSON.stringify([...new Set(v)]));
+    }
+    function removeRegionInuse() {
+        localStorage.removeItem('regioninuse');
+    }
+    function addRegionInuse(v) {
+        const oldData = getRegionInuseOrDefault();
+        // remove duplicate
+        const newData = [...new Set([...oldData, v])]
+        localStorage.setItem('regioninuse', JSON.stringify(newData));
+    }
+    /* regions [] */
     function setRegions(regions) {
-        sessionStorage.setItem('regions', JSON.stringify(regions));
+        localStorage.setItem('regions', JSON.stringify(regions));
     }
     function getRegions() {
-        return JSON.parse(sessionStorage.getItem('regions'));
+        return JSON.parse(localStorage.getItem('regions'));
     }
     function getRegionsInRange(range) {
         const all = Object.keys(getRegions());
@@ -168,6 +188,10 @@
                 return [range];
         }
     }
+
+    /**
+     * session storage operation
+    */
     /* y offset */
     function setPageYOffset(page, offset) {
         sessionStorage.setItem(page, offset);
@@ -175,7 +199,10 @@
     function getPageYOffset(page) {
         return sessionStorage.getItem(page) ?? 0;
     }
-    /* for init */
+
+    /**
+     * for init
+     */
     function recoverFromStorage() {
         const token = getToken();
         if (token) {
@@ -185,32 +212,11 @@
             getInstanceListApi();
         } else {
             // login page
-            $('rememberme').checked = recoverFromStorageByKey('keyid');
-            recoverFromStorageByKey('keysecret');
+            $('rememberme').checked = recoverMeByKey('keyid');
+            recoverMeByKey('keysecret');
             naviToPage(['login-page', 'footer']);
         }
     }
-
-    /**
-     * region in use
-     * ['v1', 'v2']
-     */
-    function getRegionInuse() {
-        const v = sessionStorage.getItem('regioninuse');
-        return v ? JSON.parse(v) : v;
-    }
-    function setRegionInuse(v) {
-        sessionStorage.setItem('regioninuse', JSON.stringify([...new Set(v)]));
-    }
-    function addRegionInuse(v) {
-        // remove duplicate
-        const newData = [...new Set([...getRegionInuse(), v])]
-        sessionStorage.setItem('regioninuse', JSON.stringify(newData));
-    }
-    function removeRegionInuse() {
-        sessionStorage.removeItem('regioninuse');
-    }
-
     /**
      * page navigation
      */
@@ -276,15 +282,14 @@
             // remember me
             if ($('rememberme').checked) {
                 $('keysecret').value = data.key_secret;
-                setMeStorage();
+                setMyKey();
             } else {
-                removeMeStorage();
+                removeMyKey();
             }
-            // user info modal
+            // userdatas
             getUserdatasApi();
-            // get instance list
-            clearInstanceList();
-            getInstanceListApi();
+            // instance list
+            getRegionInUseApi(Object.keys(data.regions));
         })
         .catch(error => {
             naviToPage(['login-page', 'footer']);
@@ -311,6 +316,49 @@
     }
 
     /**
+     * get region in use
+     */
+    function getRegionInUseApi(ids) {
+        const token = getToken();
+        if (token && ids.length > 0) {
+            const left = [...ids];
+            const id = left.pop();
+            showWaitingTxt(`地域查询&nbsp;${getRegions()[id]}`);
+
+            const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': token
+            };
+            const jsonBody = {
+                region_ids: [id]
+            };
+            const options = {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(jsonBody)
+            };
+            fetch(`${SERVICE_RESOURCE}/instancelist`, options)
+            .then(response => response.json())
+            .then(data => {
+                handleApiData(data);
+                data.instances.forEach(v => addRegionInuse(v.region_id));
+            })
+            .catch(error => {
+                showWaitingTxt(`地域查询&nbsp;${getRegions()[id]}&nbsp;<span class="text-danger">error</span>`);
+                console.log(error);
+            })
+            .finally(() => {
+                if (left.length > 0) {
+                    getRegionInUseApi(left);
+                } else {
+                    showWaitingTxt('取得实例列表');
+                    clearInstanceList();
+                    getInstanceListApi();
+                }
+            });
+        }
+    }
+    /**
      * get instance list
      */
     function getInstanceListApi() {
@@ -321,7 +369,7 @@
                 'Authorization': token
             };
             const jsonBody = {
-                region_ids: getRegionInuse() ?? Object.keys(getRegions())
+                region_ids: getRegionInuseOrDefault()
             };
             const options = {
                 method: 'POST',
@@ -363,7 +411,7 @@
     /* render instance list */
     function renderNoInstance() {
         naviToPage(['nav-header', 'instance-list-page', 'footer']);
-        showAlert($('instance-list-page-nav'), 'info', '没有既存的竞价实例');
+        showAlert($('instance-list-page-nav'), 'info', '不存在竞价实例');
     }
     function clearInstanceList() {
         $('instance-row').innerHTML = '';
@@ -436,7 +484,7 @@
                 const aElem = event.target;
                 $('instance-detail-region').dataset.id = aElem.dataset.region;
                 $('instance-detail-id').dataset.id = aElem.textContent;
-                beginWaiting('', getInstanceDetailApi);
+                beginWaiting('取得实例明细', getInstanceDetailApi);
             });
         });
         $('instance-row').querySelectorAll('button[id^="ipaddr-"]').forEach(btn => {
@@ -696,7 +744,7 @@
                     const index = event.currentTarget.id.split('-').at(-1);
                     const seq = $(`user-data-${index}`).dataset.seq;
                     // delete
-                    const newDatas = removeUserdataBySeq(seq);
+                    const newDatas = removeUserdata(seq);
                     $('user-info-modal-body').removeChild($(`user-data-${index}`));
                     renderUserdataOpArea(newDatas);
                 });
@@ -917,6 +965,7 @@
             .then(data => {
                 handleApiData(data);
                 // created
+                showWaitingTxt('取得实例列表');
                 addRegionInuse(data.region_id);
                 $('instance-list-page-nav').dataset.new = '1';
                 getInstanceListApi();
@@ -950,9 +999,9 @@
                 // userdatas
                 const user_datas = data.user_datas;
                 if (user_datas) {
-                    localStorage.setItem('userdatas', user_datas);
+                    setUserdatas(user_datas);
                 } else {
-                    localStorage.removeItem('userdatas');
+                    removeUserdatas();
                 }
             })
             .catch(error => {
@@ -1051,7 +1100,7 @@
             const loginForm = event.currentTarget;
             if (loginForm.checkValidity()) {
                 loginForm.classList.remove('was-validated');
-                beginWaiting('', authApi);
+                beginWaiting('登录验证', authApi);
             } else {
                 loginForm.classList.add('was-validated');
             }
@@ -1090,7 +1139,7 @@
             if (targetPageId) {
                 // instance released
                 if (curPageId == 'instance-detail-page' && $('instance-release-btn').classList.contains('disabled')) {
-                    beginWaiting('', getInstanceListApi);
+                    beginWaiting('取得实例列表', getInstanceListApi);
                 } else {
                     naviToPage(['nav-header', targetPageId, 'footer']);
                     switch (targetPageId) {
@@ -1104,13 +1153,13 @@
             }
         });
         $('main-btn').addEventListener('click', event => {
-            beginWaiting('', getInstanceListApi);
+            beginWaiting('取得实例列表', getInstanceListApi);
         });
         /* clear for quit */
         $('user-quit-btn').addEventListener('click', event => {
             if ($('user-clearme').checked) {
                 // clear all
-                removeMeStorage();
+                removeMyKey();
                 removeUserdatas();
                 removeRegionInuse();
             } else {
@@ -1141,7 +1190,7 @@
             } else {
                 addModal.classList.remove('was-validated');
                 // save
-                const newDatas = setUserdatas($('user-data-input-name').value, $('user-data-input-content').value);
+                const newDatas = setUserdata($('user-data-input-name').value, $('user-data-input-content').value);
                 renderUserDataList(newDatas);
                 $('userdata-modal-close').click();
             }
@@ -1206,7 +1255,7 @@
             $('bandwidth-op-default').click();
         });
         $('spec-query-btn').addEventListener('click', event => {
-            beginWaiting('', querySpecResultApi);
+            beginWaiting('取得规格列表', querySpecResultApi);
         });
         $('region-option-modal').querySelectorAll('label.btn').forEach(btn => {
             btn.addEventListener('click', event => {
@@ -1231,7 +1280,7 @@
         });
         /* create instance */
         $('instance-create-confirm').addEventListener('click', event => {
-            beginWaiting('', createInstanceApi);
+            beginWaiting('创建实例', createInstanceApi);
         });
     }
 
