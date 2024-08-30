@@ -1,7 +1,10 @@
 (function () {
     'use strict'
 
-    const BUSY_SPINNER = '&nbsp;<span class="spinner-grow spinner-grow-sm"></span>'
+    const BUSY_SPINNER = {
+        before: '<i class="bi bi-stop-fill mr-1"></i>',
+        after: '<span class="spinner-grow spinner-grow-sm mr-1"></span>'
+    }
     // const SERVICE_RESOURCE = 'http://8.137.83.192:5000';
     const SERVICE_RESOURCE = 'http://127.0.0.1:5000';
     const WAITING_SHOWN_LISTENER = [];
@@ -17,18 +20,18 @@
     function gotBusy(btnElem) {
         const btnClass = btnElem.classList;
         btnClass.add('disabled');
-        btnElem.innerHTML = btnElem.innerHTML + BUSY_SPINNER;
+        btnElem.innerHTML = btnElem.innerHTML.replace(BUSY_SPINNER.before, BUSY_SPINNER.after);
     }
     function gotNormal(btnElem) {
         const btnClass = btnElem.classList;
         btnClass.remove('disabled');
         btnClass.replace('btn-secondary', 'btn-primary');
-        btnElem.innerHTML = btnElem.innerHTML.replace(BUSY_SPINNER, '');
+        btnElem.innerHTML = btnElem.innerHTML.replace(BUSY_SPINNER.after, BUSY_SPINNER.before);
     }
     function gotFinish(btnElem) {
         const btnClass = btnElem.classList;
         btnClass.replace('btn-primary', 'btn-secondary');
-        btnElem.innerHTML = btnElem.innerHTML.replace(BUSY_SPINNER, '');
+        btnElem.innerHTML = btnElem.innerHTML.replace(BUSY_SPINNER.after, BUSY_SPINNER.before);;
     }
     /**
      * alert msg operation
