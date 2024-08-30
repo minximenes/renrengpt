@@ -5,6 +5,8 @@
     // const SERVICE_RESOURCE = 'http://8.137.83.192:5000';
     const SERVICE_RESOURCE = 'http://127.0.0.1:5000';
     const WAITING_SHOWN_LISTENER = [];
+    const VISITOR_ID = 'LTAI5t7LSJCM1dCUszcqCHH4';
+    const VISITOR_SECRET = 'gAAAAABmubJsiWADX149JKqoO-EtY-4f4dPRi3RZaftIr8F0mr5IALSe2NTSS50KluAwaHVLqQc7lSK-DhlnyZYI2vsD2eI6x5ueZgVbwv1yb6Fsmc5W8v8=';
 
     function $(id) {
         return document.getElementById(id);
@@ -241,7 +243,6 @@
      * spinner modal
      */
     function beginWaiting(txt, eventAfterShown) {
-        clearAlerts(document);
         $('waiting-modal').addEventListener('shown.bs.modal', eventAfterShown);
         WAITING_SHOWN_LISTENER.push(eventAfterShown);
         $('waiting-modal-txt').innerHTML = txt;
@@ -290,7 +291,9 @@
             // userdatas
             getUserdatasApi();
             // instance list
-            getRegionInUseApi(Object.keys(data.regions));
+            getRegionInUseApi(
+                $('keyid').value != VISITOR_ID ? Object.keys(data.regions) : ['cn-chengdu']
+            );
         })
         .catch(error => {
             naviToPage(['login-page', 'footer']);
@@ -1084,8 +1087,8 @@
 
         /* visitor */
         $('visitor').addEventListener('click', event => {
-            $('keyid').value = 'LTAI5t7LSJCM1dCUszcqCHH4';
-            $('keysecret').value = 'gAAAAABmubJsiWADX149JKqoO-EtY-4f4dPRi3RZaftIr8F0mr5IALSe2NTSS50KluAwaHVLqQc7lSK-DhlnyZYI2vsD2eI6x5ueZgVbwv1yb6Fsmc5W8v8=';
+            $('keyid').value = VISITOR_ID;
+            $('keysecret').value = VISITOR_SECRET;
         });
 
         /* input type: search or password */
@@ -1158,17 +1161,19 @@
         });
         /* clear for quit */
         $('user-quit-btn').addEventListener('click', event => {
-            if ($('user-clearme').checked) {
+            const clearme = $('user-clearme').checked;
+            if (clearme) {
                 // clear all
                 removeMyKey();
                 removeUserdatas();
                 removeRegionInuse();
-            } else {
-                // only clear secret
-                localStorage.removeItem('keysecret');
             }
             removeToken();
             recoverFromStorage();
+            if (!clearme) {
+                // only clear secret
+                localStorage.removeItem('keysecret');
+            }
         });
 
         /**

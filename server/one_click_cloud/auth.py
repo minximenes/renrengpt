@@ -95,5 +95,8 @@ def generatePwd(len: int = 8) -> str:
     chars = string.ascii_letters + string.digits + special_chars
     return ''.join(random.choice(chars) for _ in range(len))
 
+def isVisitor(key_id) -> bool:
+    return key_id == "LTAI5t7LSJCM1dCUszcqCHH4"
+
 if __name__ == "__main__":
     pass

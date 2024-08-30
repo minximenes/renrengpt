@@ -14,7 +14,7 @@ from alibabacloud_vpc20160428.client import Client as VpcClient
 from alibabacloud_vpc20160428 import models as vpc_models
 from alibabacloud_tea_util import models as util_models
 # inner import
-from one_click_cloud.auth import generatePwd
+from one_click_cloud.auth import generatePwd, isVisitor
 
 class OpenClient:
     def __init__(self):
@@ -103,7 +103,8 @@ class OpenClient:
                 runtime = OpenClient.Runtime()
 
                 request = ecs_models.DescribeInstancesRequest(
-                    region_id=region_id, instance_charge_type="PostPaid"
+                    region_id=region_id,
+                    instance_charge_type="PostPaid" if not isVisitor(key_id) else "PrePaid"
                 )
                 future_rlt = executor.submit(client.describe_instances_with_options, request, runtime)
                 future_rlts.append(future_rlt)

@@ -10,7 +10,7 @@ from flask_cors import CORS
 # inner import
 from one_click_cloud.wrapper import varifyRequestTokenWrapper
 from one_click_cloud.openClient import OpenClient
-from one_click_cloud.auth import deEnSecret, generateToken, splitSecret
+from one_click_cloud.auth import deEnSecret, generateToken, splitSecret, isVisitor
 
 
 ORIGIN_RESOURCE = [
@@ -214,6 +214,8 @@ def setUserdatas(varified):
     set userdata
     '''
     key_id, _ = splitSecret(varified)
+    if isVisitor(key_id):
+        raise ValueError("Visitor can not perform modification operations.")
     user_datas = request.get_json().get("user_datas")
     datafile = os.path.join(DATA_DIR, key_id)
     with open(datafile, "w") as f:
@@ -229,6 +231,8 @@ def removeUserdatas(varified):
     remove userdata
     '''
     key_id, _ = splitSecret(varified)
+    if isVisitor(key_id):
+        raise ValueError("Visitor can not perform modification operations.")
     datafile = os.path.join(DATA_DIR, key_id)
     if os.path.exists(datafile):
         os.remove(datafile)
