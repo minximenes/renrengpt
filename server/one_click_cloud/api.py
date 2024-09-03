@@ -167,14 +167,14 @@ def createInstance(varified):
     cpu = jsondata.get("cpu")
     mem = jsondata.get("mem")
     bandwidth = jsondata.get("bandwidth")
-    if cpu > 2 or mem > 2 or bandwidth > 3:
-        raise ValueError("Only supports creating instance with limit of 2vCPU 2memGiB 3Mbps.")
+    if cpu > 8 or mem > 16 or bandwidth > 5:
+        raise ValueError("Only supports creating instance with limit of 8vCPU 16memGiB 5Mbps.")
 
     image_id = jsondata.get("image_id")
     disk_category = jsondata.get("disk_category")
     alive_minutes = jsondata.get("alive_minutes")
-    if alive_minutes > 60 * 4:
-        alive_minutes = 60 * 4
+    if alive_minutes > 60 * 8:
+        alive_minutes = 60 * 8
     user_data_base64 = jsondata.get("user_data")
     try:
         OpenClient.createInstance(
