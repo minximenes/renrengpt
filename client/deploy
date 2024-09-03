@@ -65,7 +65,7 @@ sudo sed -i "s/\/footer.js/\/$__HASH__.footer.js/" terms.html
 sudo mkdir -p js && cd js
 wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/client/js/instance.js
 # api url
-sed -i "s/127.0.0.1:5000/8.137.83.192:81/" instance.js
+sed -i "s/http:\/\/127.0.0.1:5000/https:\/\/beautgpt.com\/api/" instance.js
 source_compress instance.js $__HASH__.instance.js
 
 wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/client/js/footer.js
@@ -91,9 +91,35 @@ sudo sed -i 's/user www-data/user root/' /etc/nginx/nginx.conf
 cat <<'EOF' > tmp
 server {
     listen 80;
-    server_name beautgpt.com;
-    add_header Cache-Control no-store;
+    server_name beautgpt.com
+                www.beautgpt.com;
+    rewrite ^/(.*) https://beautgpt.com/$1 permanent;
+}
+server {
+    listen 443;
+    server_name www.beautgpt.com;
+    rewrite ^/(.*) https://beautgpt.com/$1 permanent;
+}
 
+limit_req_zone $binary_remote_addr zone=mylimit:10m rate=2r/s;
+server {
+    listen 443 default_server ssl;
+    server_name beautgpt.com;
+
+    # ssl
+    ssl_certificate /etc/nginx/cert/beautgpt.com.pem;
+    ssl_certificate_key /etc/nginx/cert/beautgpt.com.key;
+
+    ssl_session_cache shared:SSL:1m;
+    ssl_session_timeout 5m;
+
+    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;
+    ssl_protocols TLSv1.1 TLSv1.2 TLSv1.3;
+
+    ssl_prefer_server_ciphers on;
+
+    # addr
+    add_header Cache-Control no-store;
     location / {
         root /var/www/one_click_client;
         index instance.html;
@@ -110,18 +136,15 @@ server {
         alias /var/www/one_click_client;
         index terms.html;
     }
-}
-# reverse proxy
-limit_req_zone $binary_remote_addr zone=mylimit:10m rate=2r/s;
-server {
-    listen 81;
-    server_name 8.137.83.192;
 
-    location / {
+    # reverse proxy
+    location /api {
+        rewrite ^/api/(.*) /$1 break;
         proxy_pass http://127.0.0.1:5000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
 
         limit_req zone=mylimit burst=5;
     }

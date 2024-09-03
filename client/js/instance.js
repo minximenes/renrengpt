@@ -5,7 +5,7 @@
         before: '<i class="bi bi-stop-fill mr-1"></i>',
         after: '<span class="spinner-grow spinner-grow-sm mr-1"></span>'
     }
-    // const SERVICE_RESOURCE = 'http://8.137.83.192:81';
+    // const SERVICE_RESOURCE = 'https://beautgpt.com/api';
     const SERVICE_RESOURCE = 'http://127.0.0.1:5000';
     const WAITING_SHOWN_LISTENER = [];
     const VISITOR_ID = 'LTAI5t7LSJCM1dCUszcqCHH4';
