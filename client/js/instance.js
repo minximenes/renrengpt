@@ -819,7 +819,7 @@
     */
     function renderNoSpec() {
         naviToPage(['nav-header', 'spec-query-page', 'footer']);
-        showAlert($('spec-query-page-nav'), 'info', '不存在条件符合的规格或当前没有库存');
+        showAlert($('spec-query-page-nav'), 'info', '符合条件的规格不存在或当前没有库存');
     }
     function clearSpecResult() {
         $('spec-row').innerHTML = '';

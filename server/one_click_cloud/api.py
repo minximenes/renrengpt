@@ -29,7 +29,7 @@ app.config["MAX_CONTENT_LENGTH"] = DATA_LENLIMIT
 @app.errorhandler(Exception)
 def handleError(e):
     app.logger.error(e)
-    unexpected = "An unexpected error has occurred. It will be appreciated if you email me with details."
+    unexpected = "An unexpected error has occurred. It will be appreciated if you contact me with details."
     return jsonify(error=str(e) if str(e) else unexpected), 500
 
 

@@ -57,6 +57,7 @@ sudo sed -i "s/\/footer.js/\/$__HASH__.footer.js/" privacy.html
 wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/client/support.html
 source_compress support.html
 sudo sed -i "s/\/footer.js/\/$__HASH__.footer.js/" support.html
+sudo sed -i "s/\/footer.css/\/$__HASH__.footer.css/" support.html
 
 wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/client/terms.html
 source_compress terms.html
@@ -77,6 +78,9 @@ cd ..
 sudo mkdir -p css && cd css
 wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/client/css/instance.css
 source_compress instance.css $__HASH__.instance.css
+
+wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/client/css/footer.css
+source_compress footer.css $__HASH__.footer.css
 cd ..
 
 sudo mkdir -p img && cd img
