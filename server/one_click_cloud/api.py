@@ -15,7 +15,7 @@ from one_click_cloud.auth import deEnSecret, generateToken, splitSecret, isVisit
 
 ORIGIN_RESOURCE = [
     "http://127.0.0.1:5500",
-    "https://beautgpt.com",
+    "https://renrengpt.cn",
 ]
 DATA_DIR = "/home/one_click_data/"
 # 100kB
