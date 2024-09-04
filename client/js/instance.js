@@ -519,7 +519,7 @@
     }
     /* copy ip to clipboard */
     function copyIp(td) {
-        navigator.clipboard.writeText(td.querySelector('span').textContent);
+        CopyToClipboard(td.querySelector('span').textContent);
         // IP copied
         const btn = td.querySelector('button');
         const tip = bootstrap.Tooltip.getInstance(`#${btn.id}`);
@@ -1085,9 +1085,6 @@
             i => new bootstrap.Tooltip(i)
         );
 
-        // fix navigator.clipboard.writeText when http
-        httpClipboardCopy();
-
         /* visitor */
         $('visitor').addEventListener('click', event => {
             $('keyid').value = VISITOR_ID;
@@ -1309,24 +1306,27 @@
     }
 
     /**
-     * navigator.clipboard.writeText donot work when http
+     * navigator.clipboard.writeText donot work in http and HuaweiBrowser
      */
-    function httpClipboardCopy() {
-        if (navigator.clipboard == undefined || navigator.clipboard.writeText == undefined) {
-            navigator.clipboard = {
-                writeText: function (text) {
-                    const input = document.createElement('textarea');
-                    input.value = text;
-                    document.body.appendChild(input);
-                    input.select();
-                    try {
-                        document.execCommand('copy');
-                    }
-                    finally {
-                        document.body.removeChild(input);
-                    }
+    function CopyToClipboard(text) {
+        switch (true) {
+            case navigator.clipboard == undefined:
+            case navigator.clipboard.writeText == undefined:
+            case navigator.userAgent.includes('HuaweiBrowser'):
+                const input = document.createElement('textarea');
+                input.value = text;
+                document.body.appendChild(input);
+                input.select();
+                try {
+                    document.execCommand('copy');
                 }
-            }
+                finally {
+                    document.body.removeChild(input);
+                }
+                break;
+            default:
+                navigator.clipboard.writeText(text);
+                break;
         }
     }
 
