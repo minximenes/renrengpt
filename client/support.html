@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="keywords" content="阿里云, ECS, 云服务器, OpenAPI, 价格对比, 快速创建">
-        <meta name="description" content="一键云应用根据阿里云OpenAPI的公开接口实现并提供服务。实现了大区域范围的ECS实例规格的价格对比、实例的一键创建和一键释放、初始化脚本预定义，帮助用户采取最优价格、最快速度搭建服务，去除配置门槛，预设释放时间或随时主动释放实例以最大程度控制成本。">
+        <meta name="description" content="人人云应用根据阿里云OpenAPI的公开接口实现并提供服务。实现了大区域范围的ECS实例规格的价格对比、实例的一键创建和一键释放、初始化脚本预定义，帮助用户采取最优价格、最快速度搭建服务，去除配置门槛，预设释放时间或随时主动释放实例以最大程度控制成本。">
         <title>技术支持</title>
         <link rel="icon" href="./img/favicon.svg" type="image/svg+xml">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
@@ -17,12 +17,12 @@
         <div class="container mt-3">
             <div class="row mt-3">
                 <div class="mt-3 d-flex">
-                    <i class="bi bi-file-text"></i><h6 class="mx-1">一键云技术支持</h6>
+                    <i class="bi bi-file-text"></i><h6 class="mx-1"><span class="fst-italic">人人</span>云技术支持</h6>
                 </div>
                 <div class="mt-1 px-4 small">
-                    <p class="ml-3 mr-1 text-muted">更多问题请联系QQ：896135911（备注一键云技术支持）</pp>
+                    <p class="ml-3 mr-1 text-muted">更多问题请联系QQ：896135911（备注人人云技术支持）</pp>
                 </div>
-                <div class="mt-2 px-4 small d-flex">
+                <div class="mt-2 px-4 small d-flex" id="qa-1">
                     <i class="bi bi-dash-circle-dotted"></i><p class="mx-1 mb-1">如何获取阿里云访问键ID和密钥？</p>
                 </div>
                 <div class="mt-1 px-4 small">
@@ -35,7 +35,7 @@
                         管理用户赋予管理权限AliyunECSFullAccess和AliyunVPCFullAccess。
                     </p>
                 </div>
-                <div class="mt-2 px-4 small d-flex">
+                <div class="mt-2 px-4 small d-flex" id="qa-2">
                     <i class="bi bi-dash-circle-dotted"></i><p class="mx-1 mb-1">如何写初始化脚本？</p>
                 </div>
                 <div class="mt-1 px-4 small">
@@ -54,7 +54,7 @@ sudo pip3 install -q Flask -q gunicorn >/dev/null
 echo "end" && echo
                     </pre>
                 </div>
-                <div class="mt-2 px-4 small d-flex">
+                <div class="mt-2 px-4 small d-flex" id="qa-3">
                     <i class="bi bi-dash-circle-dotted"></i><p class="mx-1 mb-1">如何查询实例使用的费用？</p>
                 </div>
                 <div class="mt-1 px-4 small">
@@ -63,13 +63,13 @@ echo "end" && echo
                         通过账单同时可查看实例的历史创建记录。
                     </p>
                 </div>
-                <div class="mt-2 px-4 small d-flex">
+                <div class="mt-2 px-4 small d-flex" id="qa-4">
                     <i class="bi bi-dash-circle-dotted"></i><p class="mx-1 mb-1">为什么实例明细页面正常显示，但是启动日志查看不了，初始化脚本的服务也连不上？</p>
                 </div>
                 <div class="mt-1 px-4 small">
                     <p class="ml-3 mr-1 text-muted">实例从资源准备到启动完毕大约需要１分钟时间。请在创建时间的１分钟后点击查看启动日志，并尝试连接初始化脚本中运行的服务。</p>
                 </div>
-                <div class="mt-2 px-4 small d-flex">
+                <div class="mt-2 px-4 small d-flex" id="qa-5">
                     <i class="bi bi-dash-circle-dotted"></i><p class="mx-1 mb-1">为什么我的竞价实例在实例列表中没有显示？</p>
                 </div>
                 <div class="mt-1 px-4 small">
