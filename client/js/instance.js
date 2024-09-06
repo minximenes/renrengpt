@@ -395,7 +395,9 @@
                     renderInstanceList(instances);
                     naviToPage(['nav-header', 'instance-list-page', 'footer']);
 
-                    showAlert(instanceListPageNav, 'info', '实例已成功创建；如果显示不及时请刷新');
+                    showAlert(instanceListPageNav, 'info',
+                        '实例已成功创建；如果显示不及时请点击<i class="bi bi-cloud-haze2-fill mx-1"></i>刷新'
+                    );
                     instanceListPageNav.dataset.new = '0';
                 } else {
                     setRegionInuse(instances.map(v => v.region_id));
