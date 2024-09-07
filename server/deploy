@@ -61,6 +61,10 @@ $gunicornLogDir/*.log {
     rotate 30
     missingok
     notifempty
+    sharedscripts
+    postrotate
+        killall -s USR1 gunicorn
+    endscript
 }
 EOF
 sudo mv tmp /etc/logrotate.d/gunicorn

@@ -493,7 +493,7 @@
                 const aElem = event.target;
                 $('instance-detail-region').dataset.id = aElem.dataset.region;
                 $('instance-detail-id').dataset.id = aElem.textContent;
-                beginWaiting('取得详细信息', getInstanceDetailApi);
+                beginWaiting('取得实例详细', getInstanceDetailApi);
             });
         });
         $('instance-row').querySelectorAll('button[id^="ipaddr-"]').forEach(btn => {
