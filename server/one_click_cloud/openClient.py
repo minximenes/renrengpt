@@ -711,7 +711,7 @@ class OpenClient:
     def getInitialPermissions() -> List[Dict]:
         """
         get initial permissions
-        TCP22, RDP3389, ICMP-1, TCP5000, TCP/UDP8388-8389, TCP1723, UDP500, UDP4500
+        TCP22, RDP3389, ICMP-1, TCP5000, TCP/UDP8388-8389, TCP1723, TCP10086, UDP500, UDP4500
         @return: list of permissons
         """
         return [
@@ -777,6 +777,13 @@ class OpenClient:
                 "port_range": "1723/1723",
                 "source_cidr_ip": "0.0.0.0/0",
                 "description": "pptp",
+            },
+            {
+                "policy": "accept",
+                "ip_protocol": "TCP",
+                "port_range": "10086/10086",
+                "source_cidr_ip": "0.0.0.0/0",
+                "description": "v2ray",
             },
             {
                 "policy": "accept",
