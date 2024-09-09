@@ -3,6 +3,7 @@ import string
 import time
 import jwt
 
+from base64 import b64decode, b64encode
 from cryptography.fernet import Fernet
 from typing import Dict, Tuple
 
@@ -95,8 +96,29 @@ def generatePwd(len: int = 8) -> str:
     chars = string.ascii_letters + string.digits + special_chars
     return ''.join(random.choice(chars) for _ in range(len))
 
-def isVisitor(key_id) -> bool:
+def isVisitor(key_id: str) -> bool:
+    '''
+    be visitor or not
+    @param: key_id
+    @return: true if user is visitor
+    '''
     return key_id == "LTAI5t7LSJCM1dCUszcqCHH4"
+
+def unistrToBase64(unistr: str) -> str:
+    '''
+    unistr to base64
+    @param: unistr
+    @return: base64
+    '''
+    return b64encode(unistr.encode("utf-8")).decode("utf-8")
+
+def base64ToUnistr(base64: str) -> str:
+    '''
+    base64 to unistr
+    @param: base64
+    @return: unistr
+    '''
+    return b64decode(base64).decode('utf-8')
 
 if __name__ == "__main__":
     pass

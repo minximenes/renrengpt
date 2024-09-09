@@ -1,0 +1,74 @@
+#!/bin/bash
+#--------------------------------------
+# inserted by renrengpt.cn
+#--------------------------------------
+echo "+----- inserted by renrengpt.cn -----+"
+echo "|install web service"
+
+sudo apt-get update >/dev/null 2>&1
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y python3 python3-pip >/dev/null
+sudo pip3 install -q Flask -q gunicorn >/dev/null
+
+# port: tcp/5000
+wget -q https://flask.palletsprojects.com/favicon.ico
+cat << EOF > httpservice.py
+import os
+from flask import Flask, Response, jsonify, send_file, send_from_directory
+
+app = Flask(__name__)
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(app.root_path, 'favicon.ico')
+
+@app.errorhandler(Exception)
+def handleError(e):
+    return jsonify(error=str(e)), 500
+
+@app.route("/init-output")
+def getLog():
+    logfile = "/var/log/cloud-init-output.log"
+    with open(logfile, "r") as file:
+        try:
+            _ = next(v for v in file if not v.strip())
+            lines = [v.strip() for v in file.readlines()]
+            return Response('\n'.join(lines), mimetype='text/plain')
+        except Exception:
+            # there is no empty line
+            file.seek(0)
+            content = file.read()
+            return Response(content, mimetype="text/plain")
+
+@app.route("/ca-download")
+def downloadCa():
+    cafile = "/vpn-certs/server-root-ca.pem"
+    if not os.path.exists(cafile):
+        raise ValueError(f'{os.path.basename(cafile)} does not exist.')
+    return send_file(cafile, as_attachment=True)
+EOF
+
+pdir=$(pwd)
+cat << EOF > http.tmp
+[Unit]
+Description=flask http
+After=network.target
+
+[Service]
+User=$(whoami)
+Group=$(groups)
+WorkingDirectory=$pdir
+Environment="PYTHONPATH=$pdir"
+ExecStart=gunicorn -b 0.0.0.0:5000 --workers 4 httpservice:app
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo mv http.tmp /etc/systemd/system/flaskhttp.service
+sudo systemctl daemon-reload
+echo -n "|" && sudo systemctl enable flaskhttp.service
+sudo systemctl restart flaskhttp.service
+
+echo "+------------------------------------+"

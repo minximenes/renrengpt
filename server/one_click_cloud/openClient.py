@@ -14,7 +14,7 @@ from alibabacloud_vpc20160428.client import Client as VpcClient
 from alibabacloud_vpc20160428 import models as vpc_models
 from alibabacloud_tea_util import models as util_models
 # inner import
-from one_click_cloud.auth import generatePwd, isVisitor
+from one_click_cloud.auth import generatePwd, isVisitor, unistrToBase64, base64ToUnistr
 
 class OpenClient:
     def __init__(self):
@@ -508,7 +508,7 @@ class OpenClient:
             password=password,
             description=f"root:{password}",
             security_group_id=security_group_id,
-            user_data=user_data,
+            user_data=OpenClient.getUserDataWithWeb(user_data) if user_data else "",
             # bandwidth
             internet_charge_type="PayByBandwidth",
             internet_max_bandwidth_out=bandwidth,
@@ -814,6 +814,20 @@ class OpenClient:
         utc_now = datetime.utcnow()
         utc_later = utc_now + timedelta(minutes=alive_minutes)
         return utc_later.strftime('%Y-%m-%dT%H:%M:00Z')
+
+    @staticmethod
+    def getUserDataWithWeb(user_data_base64: str) -> str:
+        """
+        get user data with web service
+        @param: user_data_base64
+        @return: user_data_base64
+        """
+        user_data = base64ToUnistr(user_data_base64)
+        # web data
+        web_path = os.path.join(os.path.dirname(__file__), "user_data_web")
+        with open(web_path, "r") as f:
+            web_data = f.read()
+            return unistrToBase64(f"{user_data}\n\n{web_data}")
 
 if __name__ == "__main__":
     pass
