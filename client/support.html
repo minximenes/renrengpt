@@ -47,7 +47,7 @@
                     <i class="bi bi-dash-circle-dotted"></i><p class="mx-1 mb-1">如何写初始化脚本？</p>
                 </div>
                 <div class="mt-1 px-4 small">
-                    <p class="ml-3 mr-1 mb-1 text-muted">下面是个bash脚本（Ubuntu）的示例。建议以空行<code>echo</code>开始和结束。更多示例请使用游客访问查看用户信息。</p>
+                    <p class="ml-3 mr-1 mb-1 text-muted">下面是个bash脚本（Ubuntu）的示例。建议以空行<code>echo</code>开始。更多示例请使用游客访问查看用户信息。</p>
                 </div>
                 <div class="mt-1 px-4 small">
                     <pre class="ml-3 mr-1 text-muted bg-light px-2">
@@ -58,8 +58,6 @@ echo && echo "install http service"
 sudo apt-get update >/dev/null 2>&1
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y python3 python3-pip >/dev/null
 sudo pip3 install -q Flask -q gunicorn >/dev/null
-
-echo "end" && echo
                     </pre>
                 </div>
                 <div class="mt-2 px-4 small d-flex">
