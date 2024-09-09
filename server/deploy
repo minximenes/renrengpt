@@ -17,6 +17,7 @@ wget -q -P ./one_click_cloud https://raw.githubusercontent.com/minximenes/renren
 wget -q -P ./one_click_cloud https://raw.githubusercontent.com/minximenes/renrengpt/main/server/one_click_cloud/auth.py
 wget -q -P ./one_click_cloud https://raw.githubusercontent.com/minximenes/renrengpt/main/server/one_click_cloud/openClient.py
 wget -q -P ./one_click_cloud https://raw.githubusercontent.com/minximenes/renrengpt/main/server/one_click_cloud/wrapper.py
+wget -q -P ./one_click_cloud https://raw.githubusercontent.com/minximenes/renrengpt/main/server/one_click_cloud/user_data_web
 
 echo "install dependencies"
 sudo pip3 install -q -r requirements.txt
