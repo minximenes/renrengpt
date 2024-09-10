@@ -11,6 +11,6 @@ sudo bash deployserver
 wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/client/deploy -O deployclient
 sudo bash deployclient
 # install ssl
-/etc/nginx/cert/.pem
-/etc/nginx/cert/.key
+/etc/nginx/cert/renrengpt.cn.pem
+/etc/nginx/cert/renrengpt.cn.key
 ```
