@@ -27,7 +27,7 @@
                 </div>
                 <div class="mt-1 px-4 small">
                     <p class="ml-3 mr-1 text-muted text-break">请参阅
-                        <a class="text-decoration-none" target="_blank" href="https://www.yuque.com/g/minximenes/ygrtf9/collaborator/join?token=ZVEWgsdmAMqbAPy4&source=book_collaborator# 《人人云使用手册》">人人云使用手册</a>。
+                        <a class="text-decoration-none" target="_blank" href="https://www.yuque.com/minximenes/ygrtf9">人人云使用手册</a>。
                     </p>
                 </div>
                 <div class="mt-2 px-4 small d-flex">
@@ -52,12 +52,11 @@
                 <div class="mt-1 px-4 small">
                     <pre class="ml-3 mr-1 text-muted bg-light px-2">
 #!/bin/bash
-
-echo && echo "install http service"
+# 启动约需1分钟
+echo && echo "install user_data_pptp"
 
 sudo apt-get update >/dev/null 2>&1
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y python3 python3-pip >/dev/null
-sudo pip3 install -q Flask -q gunicorn >/dev/null
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y pptpd >/dev/null
                     </pre>
                 </div>
                 <div class="mt-2 px-4 small d-flex">
