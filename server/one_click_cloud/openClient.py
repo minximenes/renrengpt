@@ -198,7 +198,7 @@ class OpenClient:
         instance_type: str, bandwidth: int, image_id: str,
         disk_categorys: List[str] = [
             "cloud_efficiency", "cloud_essd_entry"
-        ], cpu: Optional[int] = None, mem: Optional[float] = None
+        ], cpu: Optional[int] = None, mem: Optional[float] = None, is_spot: bool = True
     ) -> Tuple:
         """
         describe instance price
@@ -206,7 +206,7 @@ class OpenClient:
                 instance_type, bandwidth, image_id,
                 disk_categorys,
                 # "cloud_efficiency", "cloud_auto", "cloud_ssd", "cloud_essd", "cloud_essd_entry"
-                cpu(unused), mem(unused)
+                cpu(unused), mem(unused), is_spot(default True)
         @return: disk category and instance price
         """
         config = OpenClient.Config(key_id, key_secret, f"ecs.{region_id}")
@@ -215,7 +215,7 @@ class OpenClient:
 
         category_prices = []
         for disk_category in disk_categorys:
-            request = ecs_models.DescribePriceRequest(
+            request_paras = dict(
                 region_id=region_id,
                 resource_type="instance",
                 instance_type=instance_type,
@@ -229,11 +229,19 @@ class OpenClient:
                 system_disk=ecs_models.DescribePriceRequestSystemDisk(
                     size=20, category=disk_category
                 ),
-                # spot
-                spot_strategy="SpotAsPriceGo",
-                spot_duration=0,
                 zone_id=zone_id,
             )
+            if is_spot:
+                request_paras.update(dict(
+                    spot_strategy="SpotAsPriceGo",
+                    spot_duration=0,
+                ))
+            else:
+                request_paras.update(dict(
+                    # prepaid
+                    price_unit="Year",
+                ))
+            request = ecs_models.DescribePriceRequest(**request_paras)
             try:
                 response = client.describe_price_with_options(request, runtime)
                 category_prices.append(
@@ -323,15 +331,15 @@ class OpenClient:
     @staticmethod
     def querySpecs(
         key_id: str, key_secret: str, region_ids: List[str],
-        cpus: List[int], mems: List[float], bandwidth: int
+        cpus: List[int], mems: List[float], bandwidth: int, is_spot: bool
     ) -> List[Dict]:
         """
         query spec list
-        @param: key_id, key_secret, region_range, cpus, mems, bandwidth
+        @param: key_id, key_secret, region_range, cpus, mems, bandwidth, is_spot
         @return: spec list
         """
         instance_types = OpenClient.describeAvailableInstances(
-            key_id, key_secret, region_ids, cpus, mems
+            key_id, key_secret, region_ids, cpus, mems, is_spot
         )
         if len(instance_types) > 0:
             specs = OpenClient.comparePrice(
@@ -348,11 +356,11 @@ class OpenClient:
     @staticmethod
     def describeAvailableInstances(
         key_id: str, key_secret: str, region_ids: List[str],
-        cpus: List[int], mems: List[float]
+        cpus: List[int], mems: List[float], is_spot: bool
     ) -> List[Dict]:
         """
         describe instance type in given regions
-        @param: key_id, key_secret, region_ids, cpus, mems
+        @param: key_id, key_secret, region_ids, cpus, mems, is_spot
         @return: instance_types
         """
         instance_types, future_rlts = [], {}
@@ -365,16 +373,24 @@ class OpenClient:
                     client = EcsClient(config)
                     runtime = OpenClient.Runtime()
 
-                    request = ecs_models.DescribeAvailableResourceRequest(
+                    request_paras = dict(
                         region_id=region_id,
                         destination_resource="InstanceType",
-                        instance_charge_type="PostPaid",
-                        spot_strategy="SpotAsPriceGo",
                         cores=vCPU,
                         memory=memGiB,
                         io_optimized="optimized",
-                        network_category='vpc'
+                        network_category='vpc',
                     )
+                    if is_spot:
+                        request_paras.update(dict(
+                            instance_charge_type="PostPaid",
+                            spot_strategy="SpotAsPriceGo",
+                        ))
+                    else:
+                        request_paras.update(dict(
+                            instance_charge_type="PrePaid",
+                        ))
+                    request = ecs_models.DescribeAvailableResourceRequest(**request_paras)
                     future_rlt = executor.submit(client.describe_available_resource_with_options, request, runtime)
                     future_rlts[future_rlt] = (region_id, vCPU, memGiB)
 
@@ -392,6 +408,7 @@ class OpenClient:
                                 "instance_type": supported_res.value,
                                 "cpu": vCPU,
                                 "mem": memGiB,
+                                "is_spot": is_spot,
                             })
 
         return instance_types

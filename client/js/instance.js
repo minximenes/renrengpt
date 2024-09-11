@@ -781,12 +781,14 @@
             const cpuOp = radio$('cpu-op')?.value ?? $('cpu-op-other').value;
             const memOp = radio$('mem-op')?.value ?? $('mem-op-other').value;
             const bandwidthOp = radio$('bandwidth-op')?.value ?? $('bandwidth-op-other').value;
+            const is_spot = radio$('chargetype-op').value == 'spot';
 
             const jsonBody = {
                 region_ids: getRegionsInRange(regionRange),
                 cpus: cpuOp.split(',').map(v => parseInt(v)),
                 mems: memOp.split(',').map(v => parseInt(v)),
-                bandwidth: parseInt(bandwidthOp)
+                bandwidth: parseInt(bandwidthOp),
+                is_spot: is_spot
             };
             const options = {
                 method: 'POST',
@@ -837,8 +839,9 @@
                                 <tr>
                                     <td class="col-5 p-0 text-muted">实例规格<small class="fst-italic mx-1">${i + 1}</small></td>
                                     <td class="p-0 extra-small">
-                                        <a class="text-decoration-none pointer" id="spec-type-${i}"
-                                            data-jsn=${JSON.stringify(v)}>${getTypeLabel(v.instance_type)}</a>
+                                        ${v.is_spot ? `<a class="text-decoration-none pointer" id="spec-type-${i}"
+                                            data-jsn=${JSON.stringify(v)}>${getTypeLabel(v.instance_type)}</a>`
+                                            : getTypeLabel(v.instance_type)}
                                     </td>
                                 </tr>
                                 <tr>
@@ -863,7 +866,7 @@
                                 </tr>
                                 <tr>
                                     <td class="p-0 text-muted">目录价</td>
-                                    <td class="p-0 extra-small"><span class="text-success">${v.price}</span>&nbsp;元/小时</td>
+                                    <td class="p-0 extra-small"><span class="text-success">${v.price}</span>&nbsp;元/${v.is_spot ? '小时': '年'}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1257,6 +1260,7 @@
             $(regionOp).checked = true;
         });
         $('spec-reset-btn').addEventListener('click', event => {
+            $('chargetype-op-default').click();
             $('region-option-modal').querySelector('label.btn[for="eu-west-1"]').click();
             $('cpu-op-default').click();
             $('mem-op-default').click();

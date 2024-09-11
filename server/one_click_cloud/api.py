@@ -144,8 +144,9 @@ def specList(varified):
     cpus = jsondata.get("cpus")
     mems = jsondata.get("mems")
     bandwidth = jsondata.get("bandwidth")
+    is_spot = jsondata.get("is_spot")
     try:
-        specs = OpenClient.querySpecs(key_id, key_secret, region_ids, cpus, mems, bandwidth)
+        specs = OpenClient.querySpecs(key_id, key_secret, region_ids, cpus, mems, bandwidth, is_spot)
     except Exception as e:
         raise ValueError(e.data.get("Message") if e.data else e.message)
 
