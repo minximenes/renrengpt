@@ -1262,7 +1262,7 @@
             $(regionOp).checked = true;
         });
         $('spec-reset-btn').addEventListener('click', event => {
-            $('chargetype-op-default').click();
+            $('default-chargetype-op').click();
             $('region-option-modal').querySelector('label.btn[for="eu-west-1"]').click();
             $('cpu-op-default').click();
             $('mem-op-default').click();
