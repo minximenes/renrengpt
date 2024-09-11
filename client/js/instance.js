@@ -59,7 +59,9 @@
     function escapeSpecChars(str) {
         return str
             .replace(/\(/g, '&lpar;')
-            .replace(/\)/g, '&rpar;');
+            .replace(/\)/g, '&rpar;')
+            .replace(/\</g, '&lt;')
+            .replace(/\>/g, '&gt;');
     }
     /* clear all alerts in target div */
     function clearAlerts(targetDiv) {
