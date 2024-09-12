@@ -27,7 +27,11 @@ class OpenClient:
         @param: tasknum
         @return: max_workers
         '''
-        return tasknum if current_app.config.get("DEBUG") else 2 * os.cpu_count() + 1
+        cpu_count = os.cpu_count()
+        if current_app.config.get("DEBUG") or cpu_count >= 4:
+            return tasknum
+        else:
+            return 2 * cpu_count + 1
 
     @staticmethod
     def Config(
@@ -475,7 +479,7 @@ class OpenClient:
                 runtime = OpenClient.Runtime()
 
                 request = ecs_models.DescribeImagesRequest(
-                    region_id=region_id, status="Available", image_family="acs:ubuntu_22_04_x64"
+                    region_id=region_id, status="Available", image_family="acs:ubuntu_20_04_x64"
                 )
                 future_rlt = executor.submit(client.describe_images_with_options, request, runtime)
                 future_rlts[future_rlt] = region_id

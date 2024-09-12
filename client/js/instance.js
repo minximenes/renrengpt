@@ -6,7 +6,7 @@
         after: '<span class="spinner-grow spinner-grow-sm mr-1"></span>'
     }
     // const SERVICE_RESOURCE = 'https://renrengpt.cn/api';
-    const SERVICE_RESOURCE = 'http://127.0.0.1:5000';
+    const SERVICE_RESOURCE = 'http://127.0.0.1:5010';
     const WAITING_SHOWN_LISTENER = [];
     const VISITOR_ID = 'LTAI5t7LSJCM1dCUszcqCHH4';
     const VISITOR_SECRET = 'gAAAAABmubJsiWADX149JKqoO-EtY-4f4dPRi3RZaftIr8F0mr5IALSe2NTSS50KluAwaHVLqQc7lSK-DhlnyZYI2vsD2eI6x5ueZgVbwv1yb6Fsmc5W8v8=';
