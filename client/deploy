@@ -2,8 +2,7 @@
 
 echo "update and install"
 sudo apt-get update >/dev/null 2>&1
-sudo apt-get install -y nginx >/dev/null
-sudo apt-get install -y nodejs npm >/dev/null
+sudo apt-get install -y nginx nodejs npm >/dev/null
 # avoid timeout
 npm config set registry http://registry.npm.taobao.org
 npm install -g html-minifier uglify-js >/dev/null
@@ -86,6 +85,13 @@ cd ..
 sudo mkdir -p img && cd img
 wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/client/img/favicon.svg
 cd ..
+
+echo "install ssl cert"
+certDir=/etc/nginx/cert
+sudo mkdir -p $certDir
+cd $certDir
+wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/client/cert/renrengpt.cn.key -O renrengpt.cn.key
+wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/client/cert/renrengpt.cn.pem -O renrengpt.cn.pem
 
 echo "configurate nginx"
 # nginx.conf
