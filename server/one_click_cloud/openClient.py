@@ -28,7 +28,7 @@ class OpenClient:
         @return: max_workers
         '''
         cpu_count = os.cpu_count()
-        if current_app.config.get("DEBUG") or cpu_count >= 4:
+        if current_app.config.get("DEBUG") or cpu_count >= 8:
             return tasknum
         else:
             return 2 * cpu_count + 1
