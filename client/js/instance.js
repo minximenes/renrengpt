@@ -59,9 +59,7 @@
     function escapeSpecChars(str) {
         return str
             .replace(/\(/g, '&lpar;')
-            .replace(/\)/g, '&rpar;')
-            .replace(/\</g, '&lt;')
-            .replace(/\>/g, '&gt;');
+            .replace(/\)/g, '&rpar;');
     }
     /* clear all alerts in target div */
     function clearAlerts(targetDiv) {
@@ -176,6 +174,9 @@
     }
     function getRegions() {
         return JSON.parse(localStorage.getItem('regions'));
+    }
+    function getRegionName(id) {
+        return getRegions()[id] ?? id;
     }
     function getRegionsInRange(range) {
         const all = Object.keys(getRegions());
@@ -330,9 +331,9 @@
     function getRegionInUseApi(ids) {
         const token = getToken();
         if (token && ids.length > 0) {
-            const left = [...ids];
-            const id = left.pop();
-            showWaitingTxt(`地域查询&nbsp;${getRegions()[id]}`);
+            const rest = [...ids];
+            const id = rest.pop();
+            showWaitingTxt(`地域查询&nbsp;${getRegionName(id)}`);
 
             const headers = {
                 'Content-Type': 'application/json',
@@ -353,12 +354,12 @@
                 data.instances.forEach(v => addRegionInuse(v.region_id));
             })
             .catch(error => {
-                showWaitingTxt(`地域查询&nbsp;${getRegions()[id]}&nbsp;<span class="text-danger">error</span>`);
+                showWaitingTxt(`地域查询&nbsp;${getRegionName(id)}&nbsp;<span class="text-danger">error</span>`);
                 console.log(error);
             })
             .finally(() => {
-                if (left.length > 0) {
-                    getRegionInUseApi(left);
+                if (rest.length > 0) {
+                    getRegionInUseApi(rest);
                 } else {
                     showWaitingTxt('取得实例列表');
                     clearInstanceList();
@@ -450,7 +451,7 @@
                                 <tr>
                                     <td class="p-0 text-muted">地域</td>
                                     <td class="p-0 extra-small">
-                                        <i class="bi bi-geo-alt-fill"></i><span class="mx-1">${getRegions()[v.region_id]}</span>
+                                        <i class="bi bi-geo-alt-fill"></i><span class="mx-1">${getRegionName(v.region_id)}</span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -596,7 +597,7 @@
         idElem.dataset.id = v.instance_id;
 
         const regionElem = detail$('region');
-        regionElem.textContent = getRegions()[v.region_id];
+        regionElem.textContent = getRegionName(v.region_id);
         regionElem.dataset.id = v.region_id;
 
         detail$('zone').textContent = getZoneLabel(v.zone_id);
@@ -849,7 +850,7 @@
                                 <tr>
                                     <td class="p-0 text-muted">地域</td>
                                     <td class="p-0 extra-small">
-                                        <i class="bi bi-geo-alt-fill"></i><span class="mx-1">${getRegions()[v.region_id]}</span>
+                                        <i class="bi bi-geo-alt-fill"></i><span class="mx-1">${getRegionName(v.region_id)}</span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -904,7 +905,7 @@
         instancetype.textContent = getTypeLabel(v.instance_type);
         instancetype.dataset.jsn = JSON.stringify(v);
         create$('spec-index').textContent = i + 1;
-        create$('region').textContent = getRegions()[v.region_id];
+        create$('region').textContent = getRegionName(v.region_id);
         create$('zone').textContent = getZoneLabel(v.zone_id);
         create$('spec').innerHTML = getSpecLabel(v);
         create$('sysdisk').innerHTML = getDiskCategLabel(v.disk_category);
