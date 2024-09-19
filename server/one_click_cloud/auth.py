@@ -98,7 +98,7 @@ def generatePwd(len: int = 8) -> str:
 
 def isVisitor(key_id: str) -> bool:
     '''
-    be visitor or not
+    be visitor(as demo) or not
     @param: key_id
     @return: true if user is visitor
     '''

@@ -475,7 +475,7 @@ class OpenClient:
                 runtime = OpenClient.Runtime()
 
                 request = ecs_models.DescribeImagesRequest(
-                    region_id=region_id, status="Available", image_family="acs:ubuntu_20_04_x64"
+                    region_id=region_id, status="Available", image_family="acs:ubuntu_22_04_x64"
                 )
                 future_rlt = executor.submit(client.describe_images_with_options, request, runtime)
                 future_rlts[future_rlt] = region_id
