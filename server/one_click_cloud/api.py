@@ -23,6 +23,7 @@ ORIGIN_RESOURCE = [
 DATA_DIR = "/home/one_click_data/"
 # 100kB
 DATA_LENLIMIT = 100 * 1024
+REDIS_SECRET = os.environ.get("REDIS_SECRET")
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": ORIGIN_RESOURCE}})
@@ -244,7 +245,7 @@ def removeUserdatas(varified):
 if __name__ == "__main__":
     # scheduled task
     scheduler = BackgroundScheduler(
-        jobstores={"redis": RedisJobStore(host="8.137.83.192", password="H6r2HDdi-", db=2)}
+        jobstores={"redis": RedisJobStore(host="8.137.83.192", password=REDIS_SECRET, db=2)}
     )
     scheduler.add_job(
         runBatch,
@@ -266,7 +267,7 @@ else:
     app.logger.setLevel(gunicorn_logger.level)
     # scheduled task
     scheduler = BackgroundScheduler(
-        jobstores={"redis": RedisJobStore(password="H6r2HDdi-", db=2)}
+        jobstores={"redis": RedisJobStore(password=REDIS_SECRET, db=2)}
     )
     scheduler.add_job(
         runBatch,

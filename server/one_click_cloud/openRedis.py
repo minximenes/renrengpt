@@ -1,6 +1,9 @@
+import os
 import redis
 from typing import Optional
 
+
+REDIS_SECRET = os.environ.get("REDIS_SECRET")
 
 class OpenRedis:
     '''
@@ -15,7 +18,7 @@ class OpenRedis:
             cls._pool = redis.ConnectionPool(
                 host=host,
                 port=6379,
-                password="H6r2HDdi-",
+                password=REDIS_SECRET,
                 db=0 if db is None else db,
                 decode_responses=True,
             )
@@ -32,7 +35,7 @@ class OpenRedisDirect:
         return redis.Redis(
             host=host,
             port=6379,
-            password="H6r2HDdi-",
+            password=REDIS_SECRET,
             db=db,
             decode_responses=True,
             )

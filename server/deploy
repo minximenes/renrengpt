@@ -80,8 +80,4 @@ cd $dataDir
 wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/data/LTAI5t7LSJCM1dCUszcqCHH4 -O LTAI5t7LSJCM1dCUszcqCHH4
 # sudo cp LTAI5t7LSJCM1dCUszcqCHH4 LTAI5tHfeMRu5zhE7g9NmRbW
 
-echo "set redis"
-sudo sed -i 's/# requirepass foobared/requirepass H6r2HDdi-/' /etc/redis/redis.conf
-sudo systemctl restart redis-server
-
 echo "end"

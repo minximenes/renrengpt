@@ -1,3 +1,4 @@
+import os
 import json
 
 from typing import Dict, List
@@ -6,8 +7,8 @@ from one_click_cloud.openRedis import OpenRedis, OpenRedisDirect
 from one_click_cloud.openClient import OpenClient
 
 
-READONLY_ID = "LTAI5t7LSJCM1dCUszcqCHH4"
-READONLY_SECRET = "H6r2HDdiGk1Ooagjf1jUejBFy2PgYy"
+READONLY_ID = os.environ.get("READONLY_ID")
+READONLY_SECRET = os.environ.get("READONLY_SECRET")
 
 
 def run(host: str = "127.0.0.1"):

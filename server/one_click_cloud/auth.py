@@ -1,3 +1,4 @@
+import os
 import random
 import string
 import time
@@ -10,10 +11,10 @@ from typing import Dict, Tuple
 
 
 # SECRET_ENCRYPT_KEY = Fernet.generate_key()
-SECRET_ENCRYPT_KEY = b"UqKWLVlkY7AsvkrxoywvxA1ueBQ1sL172ggoHsg3b3o="
+SECRET_ENCRYPT_KEY = os.environ.get("SECRET_ENCRYPT_KEY").encode()
 # 30 days
 JWT_EXPIRE_TIME = 60 * 60 * 24 * 30
-JWT_SECRET = "Zm8HqvUJKcG89xA1u"
+JWT_SECRET = os.environ.get("JWT_SECRET")
 JWT_ALGORITHM = "HS256"
 
 def encryptSecret(secret: str) -> str:
