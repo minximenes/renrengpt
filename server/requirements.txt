@@ -1,3 +1,4 @@
+alibabacloud_darabonba_env==0.0.1
 alibabacloud-ecs20140526==4.1.8
 alibabacloud-vpc20160428==6.7.0
 alibabacloud_tea_openapi==0.3.10
