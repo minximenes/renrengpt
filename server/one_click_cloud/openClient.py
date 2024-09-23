@@ -15,7 +15,7 @@ from alibabacloud_vpc20160428.client import Client as VpcClient
 from alibabacloud_vpc20160428 import models as vpc_models
 from alibabacloud_tea_util import models as util_models
 # inner import
-from one_click_cloud.auth import generatePwd, isVisitor, ifDebugMode, unistrToBase64, base64ToUnistr
+from one_click_cloud.auth import generatePwd, isVisitor, inDebugMode, unistrToBase64, base64ToUnistr
 from one_click_cloud.openRedis import OpenRedis
 
 class OpenClient:
@@ -29,7 +29,7 @@ class OpenClient:
         @param: tasknum
         @return: max_workers
         '''
-        return tasknum if ifDebugMode() else 2 * os.cpu_count() + 1
+        return tasknum if inDebugMode() else 2 * os.cpu_count() + 1
 
     @staticmethod
     def Config(
@@ -498,7 +498,7 @@ class OpenClient:
         @param: key_id, key_secret, region_ids
         @return: image_ids
         '''
-        r = OpenRedis("8.137.83.192") if ifDebugMode else OpenRedis()
+        r = OpenRedis("8.137.83.192") if inDebugMode() else OpenRedis()
         ubuntuImage = r.get("ubuntuimage")
         if ubuntuImage:
             return json.loads(ubuntuImage)

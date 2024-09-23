@@ -106,13 +106,13 @@ def isVisitor(key_id: str) -> bool:
     '''
     return key_id == "LTAI5t7LSJCM1dCUszcqCHH4"
 
-def ifDebugMode() -> bool:
+def inDebugMode() -> bool:
     '''
     in debug mode or not
     @param: key_id
     @return: true if in debug mode
     '''
-    return True if current_app and current_app.config.get("DEBUG") else False
+    return True if current_app and current_app.config.get("DEBUG") == "True" else False
 
 def unistrToBase64(unistr: str) -> str:
     '''
