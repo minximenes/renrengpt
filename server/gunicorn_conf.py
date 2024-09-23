@@ -14,7 +14,7 @@ loglevel = "info"
 errorlog = "/var/log/gunicorn/error.log"
 
 def readProfile(name : str):
-    return open("/etc/profile").read().split(f"{name}=")[1].split("\n")[0].rstrip('"')
+    return open("/etc/profile").read().split(f"{name}=")[1].split("\n")[0]
 
 os.environ["SECRET_ENCRYPT_KEY"] = readProfile("SECRET_ENCRYPT_KEY")
 os.environ["JWT_SECRET"] = readProfile("JWT_SECRET")
