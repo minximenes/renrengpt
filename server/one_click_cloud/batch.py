@@ -7,7 +7,8 @@ from one_click_cloud.openClient import OpenClient
 
 
 READONLY_ID = "LTAI5t7LSJCM1dCUszcqCHH4"
-READONLY_SECRET = "AAAABm8Nhxxw9629jw8u2dvXJ1pmHjK6XR0yh6uqF32pOH8tKyN06qVyVVH_KbBBpL-ZoD13SE3UGbKRRyHGMLCayge0XmhsX1XwyBde_iU9_QiuDGC9I="
+READONLY_SECRET = "gAAAAABmubJsiWADX149JKqoO-EtY-4f4dPRi3RZaftIr8F0mr5IALSe2NTSS50KluAwaHVLqQc7lSK-DhlnyZYI2vsD2eI6x5ueZgVbwv1yb6Fsmc5W8v8="
+
 
 def run(host: str = "127.0.0.1"):
     """
