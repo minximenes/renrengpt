@@ -6,7 +6,6 @@ import os
 import logging
 import redis
 
-from alibabacloud_darabonba_env.client import Client as EnvClient
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.redis import RedisJobStore
 from flask import Flask, jsonify, request, Response
@@ -24,7 +23,7 @@ ORIGIN_RESOURCE = [
 DATA_DIR = "/home/one_click_data/"
 # 100kB
 DATA_LENLIMIT = 100 * 1024
-REDIS_SECRET = EnvClient.get_env("REDIS_SECRET")
+REDIS_SECRET = os.environ.get("REDIS_SECRET")
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": ORIGIN_RESOURCE}})

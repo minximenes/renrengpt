@@ -1,14 +1,14 @@
 import json
+import os
 
-from alibabacloud_darabonba_env.client import Client as EnvClient
 from typing import Dict, List
 # inner import
 from one_click_cloud.openRedis import OpenRedis, OpenRedisDirect
 from one_click_cloud.openClient import OpenClient
 
 
-READONLY_ID = EnvClient.get_env("READONLY_ID")
-READONLY_SECRET = EnvClient.get_env("READONLY_SECRET")
+READONLY_ID = os.environ.get("READONLY_ID")
+READONLY_SECRET = os.environ.get("READONLY_SECRET")
 
 
 def run(host: str = "127.0.0.1"):
