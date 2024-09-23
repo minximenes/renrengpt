@@ -5,6 +5,7 @@ import jwt
 
 from base64 import b64decode, b64encode
 from cryptography.fernet import Fernet
+from flask import current_app
 from typing import Dict, Tuple
 
 
@@ -103,6 +104,14 @@ def isVisitor(key_id: str) -> bool:
     @return: true if user is visitor
     '''
     return key_id == "LTAI5t7LSJCM1dCUszcqCHH4"
+
+def ifDebugMode() -> bool:
+    '''
+    in debug mode or not
+    @param: key_id
+    @return: true if in debug mode
+    '''
+    return True if current_app and current_app.config.get("DEBUG") else False
 
 def unistrToBase64(unistr: str) -> str:
     '''

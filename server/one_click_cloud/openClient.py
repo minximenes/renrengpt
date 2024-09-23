@@ -1,5 +1,6 @@
 import os
 import time
+import json
 
 from concurrent import futures
 from datetime import datetime, timedelta
@@ -14,7 +15,8 @@ from alibabacloud_vpc20160428.client import Client as VpcClient
 from alibabacloud_vpc20160428 import models as vpc_models
 from alibabacloud_tea_util import models as util_models
 # inner import
-from one_click_cloud.auth import generatePwd, isVisitor, unistrToBase64, base64ToUnistr
+from one_click_cloud.auth import generatePwd, isVisitor, ifDebugMode, unistrToBase64, base64ToUnistr
+from one_click_cloud.openRedis import OpenRedis
 
 class OpenClient:
     def __init__(self):
@@ -27,7 +29,7 @@ class OpenClient:
         @param: tasknum
         @return: max_workers
         '''
-        return tasknum if current_app.config.get("DEBUG") else 2 * os.cpu_count() + 1
+        return tasknum if ifDebugMode() else 2 * os.cpu_count() + 1
 
     @staticmethod
     def Config(
@@ -60,11 +62,11 @@ class OpenClient:
 
     @staticmethod
     def describeRegions(
-        key_id: str, key_secret: str
+        key_id: str, key_secret: str, tuning: bool = True
     ) -> Dict:
         """
         describe regions
-        @param: key_id, key_secret
+        @param: key_id, key_secret, tuning(default True)
         @return: all regions' id and name
         """
         config = OpenClient.Config(key_id, key_secret)
@@ -75,11 +77,11 @@ class OpenClient:
             resource_type="instance", instance_charge_type="SpotAsPriceGo"
         )
         response = client.describe_regions_with_options(request, runtime)
-        # tunning dubai, Indonesia
+        # exclude dubai, Indonesia when tuning
         return {
             r.region_id: r.local_name
             for r in response.body.regions.region
-            if r.region_id not in ["me-east-1", "ap-southeast-5"]
+            if not (r.region_id in ["me-east-1", "ap-southeast-5"] and tuning)
         }
 
     @staticmethod
@@ -424,7 +426,7 @@ class OpenClient:
         """
         # image id
         region_ids = set([instance_tp["region_id"] for instance_tp in instance_types])
-        image_ids = OpenClient.describeUbuntuImages(key_id, key_secret, region_ids)
+        image_ids = OpenClient.retrieveUbuntuImages(key_id, key_secret, region_ids)
         # price
         instance_prices, future_rlts = [], {}
         tasknum = len(instance_types)
@@ -475,7 +477,7 @@ class OpenClient:
                 runtime = OpenClient.Runtime()
 
                 request = ecs_models.DescribeImagesRequest(
-                    region_id=region_id, status="Available", image_family="acs:ubuntu_22_04_x64"
+                    region_id=region_id, status="Available", image_family="acs:ubuntu_20_04_x64"
                 )
                 future_rlt = executor.submit(client.describe_images_with_options, request, runtime)
                 future_rlts[future_rlt] = region_id
@@ -486,6 +488,22 @@ class OpenClient:
                 image_ids[region_id] = response.body.images.image[0].image_id
 
         return image_ids
+
+    @staticmethod
+    def retrieveUbuntuImages(
+        key_id: str, key_secret: str, region_ids: List[str]
+    ) -> Dict:
+        '''
+        retrieve ubuntu image from redis or api
+        @param: key_id, key_secret, region_ids
+        @return: image_ids
+        '''
+        r = OpenRedis("8.137.83.192") if ifDebugMode else OpenRedis()
+        ubuntuImage = r.get("ubuntuimage")
+        if ubuntuImage:
+            return json.loads(ubuntuImage)
+        else:
+            return OpenClient.describeUbuntuImages(key_id, key_secret, region_ids)
 
     @staticmethod
     def createInstance(

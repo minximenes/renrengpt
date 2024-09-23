@@ -2,9 +2,11 @@ alibabacloud-ecs20140526==4.1.8
 alibabacloud-vpc20160428==6.7.0
 alibabacloud_tea_openapi==0.3.10
 alibabacloud_tea_util==0.3.12
+APScheduler==3.10.4
 cryptography==42.0.8
 Flask==3.0.3
 Flask-Cors==4.0.1
 gevent==24.2.1
 gunicorn==23.0.0
 PyJWT==2.6.0
+redis==5.0.8

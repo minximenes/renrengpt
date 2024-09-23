@@ -4,14 +4,17 @@ if __name__ == "__main__":
 
 import os
 import logging
+import redis
 
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.jobstores.redis import RedisJobStore
 from flask import Flask, jsonify, request, Response
 from flask_cors import CORS
 # inner import
 from one_click_cloud.wrapper import varifyRequestTokenWrapper
 from one_click_cloud.openClient import OpenClient
 from one_click_cloud.auth import deEnSecret, generateToken, splitSecret, isVisitor
-
+from one_click_cloud.batch import run as runBatch
 
 ORIGIN_RESOURCE = [
     "http://127.0.0.1:5500",
@@ -239,9 +242,40 @@ def removeUserdatas(varified):
 
 
 if __name__ == "__main__":
+    # scheduled task
+    scheduler = BackgroundScheduler(
+        jobstores={"redis": RedisJobStore(host="8.137.83.192", password="H6r2HDdi-", db=2)}
+    )
+    scheduler.add_job(
+        runBatch,
+        args=["8.137.83.192"],
+        trigger="interval",
+        minutes=5,
+        id="refreshRedisData",
+        jobstore="redis",
+        replace_existing=True
+    )
+    scheduler.start()
+    # init
+    runBatch("8.137.83.192")
     app.run(host="0.0.0.0", port=5010, debug=True)
 else:
     # product log
     gunicorn_logger = logging.getLogger("gunicorn.error")
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)
+    # scheduled task
+    scheduler = BackgroundScheduler(
+        jobstores={"redis": RedisJobStore(password="H6r2HDdi-", db=2)}
+    )
+    scheduler.add_job(
+        runBatch,
+        trigger="cron",
+        hour=6,
+        id="refreshRedisData",
+        jobstore="redis",
+        replace_existing=True
+    )
+    scheduler.start()
+    # init
+    runBatch()

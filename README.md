@@ -2,7 +2,7 @@
 
 ## deploy server
 ```bash
-# use inner tcp/5010
+# use inner tcp/5010(gunicorn) tcp/6379(redis)
 wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/server/deploy -O deployserver
 sudo bash deployserver
 ```
