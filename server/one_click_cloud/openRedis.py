@@ -1,9 +1,10 @@
-import os
 import redis
+
+from alibabacloud_darabonba_env.client import Client as EnvClient
 from typing import Optional
 
 
-REDIS_SECRET = os.environ.get("REDIS_SECRET")
+REDIS_SECRET = EnvClient.get_env("REDIS_SECRET")
 
 class OpenRedis:
     '''
