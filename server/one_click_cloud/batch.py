@@ -1,6 +1,7 @@
 import json
 import os
 
+from flask import current_app
 from typing import Dict, List
 # inner import
 from one_click_cloud.openRedis import OpenRedis, OpenRedisDirect
@@ -23,6 +24,7 @@ def run(host: str = "127.0.0.1"):
     ]
     imagekv = initkvUbuntuImage(region_ids)
     updatedb(host, [imagekv])
+    current_app.logger.info("apsheduler ran once")
 
 
 def initkvUbuntuImage(region_ids: List[str]) -> Dict:

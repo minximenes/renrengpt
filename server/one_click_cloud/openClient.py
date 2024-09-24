@@ -4,7 +4,6 @@ import json
 
 from concurrent import futures
 from datetime import datetime, timedelta
-from flask import current_app
 from itertools import groupby
 from typing import Dict, List, Optional, Set, Tuple
 
