@@ -257,12 +257,10 @@ if __name__ == "__main__":
         replace_existing=True
     )
     scheduler.start()
-    # init
-    runBatch("8.137.83.192")
     app.run(host="0.0.0.0", port=5010, debug=True)
 else:
     # product log
-    gunicorn_logger = logging.getLogger("gunicorn.info")
+    gunicorn_logger = logging.getLogger("gunicorn.error")
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)
     # scheduled task
@@ -278,5 +276,4 @@ else:
         replace_existing=True
     )
     scheduler.start()
-    # init
-    runBatch()
+

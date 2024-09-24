@@ -12,7 +12,7 @@ timeout = 120
 accesslog = "/var/log/gunicorn/access.log"
 loglevel = "info"
 errorlog = "/var/log/gunicorn/error.log"
-
+# env
 def readProfile(name : str):
     return open("/etc/profile").read().split(f"{name}=")[1].split("\n")[0]
 
