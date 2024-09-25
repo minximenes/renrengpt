@@ -1,5 +1,6 @@
 import json
 import os
+import requests
 
 from flask import current_app
 from typing import Dict, List
@@ -12,10 +13,21 @@ READONLY_ID = os.environ.get("READONLY_ID")
 READONLY_SECRET = os.environ.get("READONLY_SECRET")
 
 
-def run(host: str = "127.0.0.1"):
+def run(redisdb: str = "127.0.0.1"):
     """
     run batch
-    @param: host(default localhost)
+    @param: redisdb(default localhost)
+    """
+    url = "http://127.0.0.1:5010/batch"
+    data = {"redisdb": redisdb}
+    headers = {"Content-Type": "application/json"}
+    requests.post(url, json=data, headers=headers)
+
+
+def refreshRedisData(host: str):
+    """
+    refresh redis data
+    @param: host
     """
     region_ids = [
         key for key in OpenClient.describeRegions(
@@ -42,16 +54,11 @@ def updatedb(host: str, kvs: List[Dict]):
     update redis
     @param: host, kvs
     '''
-    using_db = OpenRedis(host).connection_pool.connection_kwargs["db"]
-    # update idle
-    idle_db = 1 if using_db == 0 else 0
-    directR = OpenRedisDirect(host, idle_db)
+    directR = OpenRedisDirect(host)
     directR.flushdb()
     for kv in kvs:
         for key in kv:
             directR.set(key, kv[key])
-    # shift db
-    OpenRedis(host, idle_db)
 
 
 if __name__ == "__main__":

@@ -15,7 +15,7 @@ from flask_cors import CORS
 from one_click_cloud.wrapper import varifyRequestTokenWrapper
 from one_click_cloud.openClient import OpenClient
 from one_click_cloud.auth import deEnSecret, generateToken, splitSecret, isVisitor
-from one_click_cloud.batch import run as runBatch
+from one_click_cloud.batch import run as runBatch, refreshRedisData
 
 ORIGIN_RESOURCE = [
     "http://127.0.0.1:5500",
@@ -243,10 +243,23 @@ def removeUserdatas(varified):
     return jsonify(new_token=varified.get("new_token"))
 
 
+@app.route("/batch", methods=["POST"])
+def batch():
+    '''
+    run batch
+    '''
+    redisdb = request.get_json().get("redisdb")
+    if not redisdb:
+        raise ValueError("redis db is not given.")
+
+    refreshRedisData(redisdb)
+    return "ok"
+
+
 if __name__ == "__main__":
     # scheduled task
     scheduler = BackgroundScheduler(
-        jobstores={"redis": RedisJobStore(host="8.137.83.192", password=REDIS_SECRET, db=2)}
+        jobstores={"redis": RedisJobStore(host="8.137.83.192", password=REDIS_SECRET)}
     )
     scheduler.add_job(
         runBatch,
@@ -273,7 +286,7 @@ else:
     else:
         # scheduled task
         scheduler = BackgroundScheduler(
-            jobstores={"redis": RedisJobStore(password=REDIS_SECRET, db=2)}
+            jobstores={"redis": RedisJobStore(password=REDIS_SECRET)}
         )
         scheduler.add_job(
             runBatch,
@@ -284,4 +297,3 @@ else:
             replace_existing=True
         )
         scheduler.start()
-
