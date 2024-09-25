@@ -40,7 +40,7 @@ User=$(whoami)
 Group=$(groups)
 WorkingDirectory=$pdir
 Environment="PYTHONPATH=$pdir"
-ExecStart=gunicorn --preload -c gunicorn_conf.py one_click_cloud.api:app
+ExecStart=gunicorn -c gunicorn_conf.py one_click_cloud.api:app
 Restart=always
 RestartSec=5
 

@@ -5,6 +5,7 @@ if __name__ == "__main__":
 import os
 import logging
 import redis
+import socket
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.redis import RedisJobStore
@@ -263,17 +264,24 @@ else:
     gunicorn_logger = logging.getLogger("gunicorn.error")
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)
-    # scheduled task
-    scheduler = BackgroundScheduler(
-        jobstores={"redis": RedisJobStore(password=REDIS_SECRET, db=2)}
-    )
-    scheduler.add_job(
-        runBatch,
-        trigger="cron",
-        hour=6,
-        id="refreshRedisData",
-        jobstore="redis",
-        replace_existing=True
-    )
-    scheduler.start()
+    # single worker
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.bind(("127.0.0.1", 47200))
+    except socket.error:
+        pass
+    else:
+        # scheduled task
+        scheduler = BackgroundScheduler(
+            jobstores={"redis": RedisJobStore(password=REDIS_SECRET, db=2)}
+        )
+        scheduler.add_job(
+            runBatch,
+            trigger="cron",
+            hour=6,
+            id="refreshRedisData",
+            jobstore="redis",
+            replace_existing=True
+        )
+        scheduler.start()
 
