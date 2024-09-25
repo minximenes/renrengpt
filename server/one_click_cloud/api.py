@@ -271,7 +271,7 @@ if __name__ == "__main__":
         runBatch,
         args=["8.137.83.192"],
         trigger="interval",
-        minutes=1,
+        minutes=5,
         id="refreshRedisData",
         jobstore="redis",
         replace_existing=True
