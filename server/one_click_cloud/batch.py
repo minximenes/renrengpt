@@ -40,7 +40,7 @@ def refreshRedisData(key_id: str, key_secret: str, host: str):
     ]
     imagekv = initkvUbuntuImage(key_id, key_secret, region_ids)
     updatedb(host, [imagekv])
-    current_app.logger.info("apsheduler ran once")
+    current_app.logger.warning("apsheduler ran once")
 
 
 def initkvUbuntuImage(key_id: str, key_secret: str, region_ids: List[str]) -> Dict:

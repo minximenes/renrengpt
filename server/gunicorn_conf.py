@@ -10,7 +10,7 @@ worker_class = "gevent"
 worker_connections = 1000
 timeout = 120
 accesslog = "/var/log/gunicorn/access.log"
-loglevel = "info"
+loglevel = "warning"
 errorlog = "/var/log/gunicorn/error.log"
 # env
 def readProfile(name : str):
