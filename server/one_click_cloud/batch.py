@@ -19,33 +19,37 @@ def run(redisdb: str = "127.0.0.1"):
     @param: redisdb(default localhost)
     """
     url = "http://127.0.0.1:5010/batch"
-    data = {"redisdb": redisdb}
+    data = {
+        "key_id": READONLY_ID,
+        "key_secret": READONLY_SECRET,
+        "redisdb": redisdb
+    }
     headers = {"Content-Type": "application/json"}
     requests.post(url, json=data, headers=headers)
 
 
-def refreshRedisData(host: str):
+def refreshRedisData(key_id: str, key_secret: str, host: str):
     """
     refresh redis data
-    @param: host
+    @param: key_id, key_secret, host
     """
     region_ids = [
         key for key in OpenClient.describeRegions(
-            READONLY_ID, READONLY_SECRET, tuning=False
+            key_id, key_secret, tuning=False
         )
     ]
-    imagekv = initkvUbuntuImage(region_ids)
+    imagekv = initkvUbuntuImage(key_id, key_secret, region_ids)
     updatedb(host, [imagekv])
     current_app.logger.info("apsheduler ran once")
 
 
-def initkvUbuntuImage(region_ids: List[str]) -> Dict:
+def initkvUbuntuImage(key_id: str, key_secret: str, region_ids: List[str]) -> Dict:
     """
     get ubuntu image
-    @param: region_ids
+    @param: key_id, key_secret, region_ids
     @return: {ubuntuimage: {regionid: image_id}}
     """
-    image_ids = OpenClient.describeUbuntuImages(READONLY_ID, READONLY_SECRET, region_ids)
+    image_ids = OpenClient.describeUbuntuImages(key_id, key_secret, region_ids)
     return {"ubuntuimage": json.dumps(image_ids)}
 
 

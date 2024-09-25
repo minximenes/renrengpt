@@ -248,11 +248,17 @@ def batch():
     '''
     run batch
     '''
-    redisdb = request.get_json().get("redisdb")
+    jsondata = request.get_json()
+    key_id = jsondata.get("key_id")
+    key_secret = jsondata.get("key_secret")
+    if not key_id or not key_secret:
+        raise ValueError("Access key is not given.")
+
+    redisdb = jsondata.get("redisdb")
     if not redisdb:
         raise ValueError("redis db is not given.")
 
-    refreshRedisData(redisdb)
+    refreshRedisData(key_id, key_secret, redisdb)
     return "ok"
 
 
@@ -265,7 +271,7 @@ if __name__ == "__main__":
         runBatch,
         args=["8.137.83.192"],
         trigger="interval",
-        minutes=5,
+        minutes=1,
         id="refreshRedisData",
         jobstore="redis",
         replace_existing=True
