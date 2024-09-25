@@ -77,7 +77,7 @@ echo "create userdata dir"
 dataDir=/home/one_click_data
 sudo mkdir -p $dataDir
 cd $dataDir
-wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/data/LTAI5t7LSJCM1dCUszcqCHH4 -O LTAI5t7LSJCM1dCUszcqCHH4
-# sudo cp LTAI5t7LSJCM1dCUszcqCHH4 LTAI5tHfeMRu5zhE7g9NmRbW
+wget -q https://raw.githubusercontent.com/minximenes/renrengpt/main/data/LTAI5tPhKGUUMDUvYmKNH2mo -O LTAI5tPhKGUUMDUvYmKNH2mo
+# sudo cp LTAI5tPhKGUUMDUvYmKNH2mo LTAI5tHfeMRu5zhE7g9NmRbW
 
 echo "end"

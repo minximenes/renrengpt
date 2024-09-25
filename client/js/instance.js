@@ -8,8 +8,8 @@
     // const SERVICE_RESOURCE = 'https://renrengpt.cn/api';
     const SERVICE_RESOURCE = 'http://127.0.0.1:5010';
     const WAITING_SHOWN_LISTENER = [];
-    const VISITOR_ID = 'LTAI5t7LSJCM1dCUszcqCHH4';
-    const VISITOR_SECRET = 'gAAAAABmubJsiWADX149JKqoO-EtY-4f4dPRi3RZaftIr8F0mr5IALSe2NTSS50KluAwaHVLqQc7lSK-DhlnyZYI2vsD2eI6x5ueZgVbwv1yb6Fsmc5W8v8=';
+    const VISITOR_ID = 'LTAI5tPhKGUUMDUvYmKNH2mo';
+    const VISITOR_SECRET = 'gAAAAABm85yEXUQtzDkR_2ULrf_AOHFR7DgF7N_9WRmfbj8fKszAdEM5gkQdd9HxXXv0atvGH0SxjOhVsZseV_-y11yFhwfZidH_PiToPg_n8WSW6ngtT3I=';
 
     function $(id) {
         return document.getElementById(id);

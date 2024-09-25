@@ -104,7 +104,7 @@ def isVisitor(key_id: str) -> bool:
     @param: key_id
     @return: true if user is visitor
     '''
-    return key_id == "LTAI5t7LSJCM1dCUszcqCHH4"
+    return key_id == "LTAI5tPhKGUUMDUvYmKNH2mo"
 
 def inDebugMode() -> bool:
     '''
